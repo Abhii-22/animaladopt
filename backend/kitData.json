@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Premium Dog Food",
+    "price": 25,
+    "description": "High-quality, nutritious food for a healthy dog.",
+    "image": "/images/dog-food.jpg",
+    "category": "Food"
+  },
+  {
+    "name": "Squeaky Chew Toy",
+    "price": 10,
+    "description": "Durable and fun toy to keep your pet entertained.",
+    "image": "/images/chew-toy.jpg",
+    "category": "Toy"
+  },
+  {
+    "name": "Cozy Pet Bed",
+    "price": 45,
+    "description": "A soft and comfortable bed for your furry friend.",
+    "image": "/images/pet-bed.jpg",
+    "category": "Accessory"
+  },
+  {
+    "name": "Flea & Tick Prevention",
+    "price": 30,
+    "description": "Monthly treatment to protect your pet from fleas and ticks.",
+    "image": "/images/flea-tick.jpg",
+    "category": "Health"
+  }
+]
