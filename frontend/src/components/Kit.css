@@ -1,0 +1,231 @@
+.kit-container {
+  background-color: #000;
+  color: #fff;
+  padding: 40px 50px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kit-header {
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
+.cart-icon-btn {
+  position: fixed; /* Change to fixed positioning */
+  top: 20px;      /* Adjust top position */
+  right: 30px;     /* Adjust right position */
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #fff;
+  z-index: 1000; /* Ensure it stays on top */
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4d4d;
+  color: #fff;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kit-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.kit-header p {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.kit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.kit-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.kit-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.kit-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.kit-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.kit-description {
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.6;
+  flex-grow: 1;
+  margin-bottom: 20px;
+}
+
+.kit-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.kit-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4ecdc4;
+}
+
+.add-to-cart-btn {
+  background: linear-gradient(135deg, #40fa07, #32d400);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+  background: linear-gradient(135deg, #32d400, #28b300);
+  transform: translateY(-2px);
+}
+
+.contact-btn {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+.contact-btn:hover {
+  background: linear-gradient(135deg, #feb47b, #ff7e5f);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .kit-container {
+    padding: 30px 20px;
+  }
+
+  .kit-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .kit-header p {
+    font-size: 1.1rem;
+  }
+
+  .kit-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kit-container {
+    padding: 20px 15px;
+  }
+
+  .back-btn {
+    top: 5px;
+    left: 5px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .cart-icon-btn {
+    top: 15px;
+    right: 15px;
+    font-size: 1.8rem;
+  }
+
+  .kit-header h1 {
+    font-size: 2rem;
+  }
+
+  .kit-header p {
+    font-size: 1rem;
+  }
+
+  .kit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kit-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .add-to-cart-btn,
+  .contact-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

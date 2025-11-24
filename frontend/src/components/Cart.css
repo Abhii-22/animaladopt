@@ -1,0 +1,134 @@
+.cart-container {
+  padding: 40px 50px;
+  background-color: #000;
+  color: #fff;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.cart-container h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.cart-container p {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.cart-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+@media (max-width: 992px) {
+  .cart-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .cart-container {
+    padding: 30px 20px;
+  }
+
+  .cart-container h1 {
+    font-size: 2.5rem;
+  }
+
+  .cart-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-container h1 {
+    font-size: 2rem;
+  }
+
+  .cart-item-details h3 {
+    font-size: 1.1rem;
+  }
+
+  .order-now-btn, .remove-btn {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+}
+
+.cart-item {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.cart-item-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.cart-item-details {
+  padding: 15px;
+}
+
+.cart-item-details h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.cart-item-details p {
+  font-size: 1rem;
+  color: #4ecdc4;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.payment-option {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.payment-option label {
+  margin-left: 8px;
+}
+
+.order-now-btn, .remove-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.order-now-btn {
+  background: linear-gradient(135deg, #40fa07, #32d400);
+  color: #000;
+}
+
+.order-now-btn:hover {
+  background: linear-gradient(135deg, #32d400, #28b300);
+  transform: translateY(-2px);
+}
+
+.remove-btn {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: #fff;
+}
+
+.remove-btn:hover {
+  background: linear-gradient(135deg, #feb47b, #ff7e5f);
+  transform: translateY(-2px);
+}

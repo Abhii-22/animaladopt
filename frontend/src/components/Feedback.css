@@ -1,0 +1,221 @@
+.feedback-section {
+  padding: 60px 50px;
+  background-color: #0a0a0a;
+  color: #fff;
+  text-align: center;
+}
+
+.feedback-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #FFFFFF;
+}
+
+.feedback-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+}
+
+.feedback-scroller {
+  display: flex;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+}
+
+.feedback-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 30px;
+  margin: 0 15px;
+  width: 350px;
+  flex-shrink: 0;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feedback-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.feedback-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-style: italic;
+  color: #ccc;
+}
+
+.adopter-info {
+  display: flex;
+  align-items: center;
+}
+
+.adopter-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 2px solid #4ecdc4;
+}
+
+.adopter-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Contact Section Styles */
+.contact-section {
+  padding: 80px 50px;
+  background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-section::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 152, 0, 0.1), transparent);
+  border-radius: 50%;
+  animation: float 7s infinite ease-in-out alternate;
+  z-index: 1;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 50px;
+  z-index: 2;
+}
+
+.contact-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.contact-subtitle {
+  font-size: 1.1rem;
+  color: #b0b0b0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-content-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+.contact-info-map {
+  flex-grow: 1;
+  max-width: 800px; /* Widen the content area */
+  width: 100%;
+  background: #222;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  text-align: center; /* Center the content */
+}
+
+.contact-details h3 {
+  font-size: 1.8rem; /* Make title larger */
+  margin-bottom: 25px;
+  color: #ff9800;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.contact-details h3::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background-color: #ff9800;
+  border-radius: 2px;
+}
+
+.contact-details p {
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  color: #b0b0b0;
+}
+
+.map-container {
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 30px; /* Increase space */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.map-container:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+
+@media (max-width: 900px) {
+  .contact-content-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .feedback-section,
+  .contact-section {
+    padding: 40px 20px;
+  }
+
+  .feedback-title,
+  .contact-title {
+    font-size: 2rem;
+  }
+
+  .feedback-card {
+    width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feedback-card {
+    width: 280px;
+    padding: 20px;
+  }
+
+  .feedback-text {
+    font-size: 0.9rem;
+  }
+
+  .contact-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
