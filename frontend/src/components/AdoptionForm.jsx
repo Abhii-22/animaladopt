@@ -48,12 +48,28 @@ const AdoptionForm = ({ animal, onClose }) => {
     }
   };
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    return `http://localhost:5001/${imagePath.replace(/\\/g, '/')}`;
+  };
+
   return (
     <div className="adoption-form-modal-overlay" onClick={onClose}>
       <div className="adoption-form-modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>×</button>
         <div className="animal-image-container">
-          <img src={animal.image} alt={animal.name} className="animal-form-image" />
+          <img 
+            src={getImageUrl(animal.image)} 
+            alt={animal.name} 
+            className="animal-form-image" 
+            onError={(e) => {
+              e.target.onerror = null; 
+              e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+            }} 
+          />
         </div>
         <div className="form-fields-container">
           <h2>Adoption Form for {animal.name}</h2>
