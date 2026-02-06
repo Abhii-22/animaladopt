@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: adoption-frontend
+    runtime: node
+    buildCommand: "npm run build"
+    startCommand: "npx serve -s build -l 10000"
+    envVars:
+      - key: NODE_ENV
+        value: production
+    plan: free
