@@ -5,24 +5,36 @@ const cors = require('cors');
 const animalRoutes = require('./routes/animalRoutes');
 const kitRoutes = require('./routes/kitRoutes');
 const adoptionRoutes = require('./routes/adoptionRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
-app.use(express.json()); // for parsing application/json
-app.use('/uploads', express.static('uploads')); // Serve uploaded files
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 // Database connection
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DATABASE_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
   .then(() => console.log('MongoDB connected successfully.'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // API Routes
 app.use('/api/animals', animalRoutes);
 app.use('/api/kits', kitRoutes);
 app.use('/api/adoptions', adoptionRoutes);
+app.use('/api/auth', authRoutes);
 
 // Start the server
 app.listen(port, () => {

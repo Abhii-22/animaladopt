@@ -21,14 +21,21 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 const router = express.Router();
 const animalController = require('../controllers/animalController');
+const { protect } = require('../controllers/authController');
 
 // GET all animals
 router.get('/', animalController.getAllAnimals);
 
-// POST a new animal
-router.post('/', animalController.createAnimal);
+// GET user's animals (protected)
+router.get('/my-pets', protect, animalController.getUserAnimals);
 
-// POST a new animal with image upload
-router.post('/upload', upload.single('image'), animalController.uploadAnimal);
+// POST a new animal (protected)
+router.post('/', protect, animalController.createAnimal);
+
+// POST a new animal with image upload (protected)
+router.post('/upload', protect, upload.single('image'), animalController.uploadAnimal);
+
+// DELETE an animal (protected)
+router.delete('/:id', protect, animalController.deleteAnimal);
 
 module.exports = router;

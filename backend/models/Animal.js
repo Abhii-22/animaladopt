@@ -14,7 +14,8 @@ const animalSchema = new mongoose.Schema({
   neutered: { type: Boolean, default: false },
   price: { type: Number, required: true },
   phone: { type: String, required: true },
-  shelter: { type: String, default: 'Happy Paws Shelter' }
+  shelter: { type: String, default: 'Happy Paws Shelter' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
 module.exports = mongoose.model('Animal', animalSchema);

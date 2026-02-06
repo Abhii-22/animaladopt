@@ -58,9 +58,8 @@ const Upload = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
+    setError('');
+    setSuccessMessage('');
 
     const data = new FormData();
     for (const key in formData) {
@@ -68,9 +67,19 @@ const Upload = () => {
     }
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('You need to be logged in to upload a pet');
+        navigate('/login');
+        return;
+      }
+
       const response = await fetch('http://localhost:5001/api/animals/upload', {
         method: 'POST',
-        body: data,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: data
       });
 
       if (response.ok) {

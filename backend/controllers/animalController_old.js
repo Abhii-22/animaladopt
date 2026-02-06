@@ -45,7 +45,6 @@ exports.uploadAnimal = async (req, res) => {
     vaccinated: vaccinated === 'true',
     neutered: neutered === 'true',
     image,
-    user: req.user.id // Add current user ID
   });
 
   try {
@@ -53,44 +52,5 @@ exports.uploadAnimal = async (req, res) => {
     res.status(201).json(newAnimal);
   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-};
-
-// Get user's animals
-exports.getUserAnimals = async (req, res) => {
-  try {
-    const animals = await Animal.find({ user: req.user.id });
-    res.status(200).json({
-      status: 'success',
-      data: {
-        animals
-      }
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Delete animal
-exports.deleteAnimal = async (req, res) => {
-  try {
-    const animal = await Animal.findById(req.params.id);
-    
-    if (!animal) {
-      return res.status(404).json({ message: 'Animal not found' });
-    }
-    
-    // Check if the animal belongs to the current user
-    if (animal.user.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized to delete this animal' });
-    }
-    
-    await Animal.findByIdAndDelete(req.params.id);
-    res.status(200).json({
-      status: 'success',
-      message: 'Animal deleted successfully'
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
   }
 };
