@@ -34,7 +34,9 @@ const Adoption = () => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    return `${API_BASE_URL}/${imagePath.replace(/\\/g, '/')}`;
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+    return `${API_BASE_URL}/${cleanPath}`;
   };
 
   const handleAdoptClick = (animal) => {

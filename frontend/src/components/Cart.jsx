@@ -1,7 +1,18 @@
 import React from 'react';
+import API_BASE_URL from '../config/api';
 import './Cart.css';
 
 const Cart = ({ cartItems = [], removeFromCart }) => {
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+    return `${API_BASE_URL}/${cleanPath}`;
+  };
+
   return (
     <div className="cart-container">
       <h1>Your Cart</h1>
@@ -11,7 +22,7 @@ const Cart = ({ cartItems = [], removeFromCart }) => {
         <div className="cart-items">
           {cartItems.map((item, index) => (
             <div className="cart-item" key={index}>
-              <img src={item.image} alt={item.name} className="cart-item-image" />
+              <img src={getImageUrl(item.image)} alt={item.name} className="cart-item-image" />
                               <div className="cart-item-details">
                   <h3>{item.name}</h3>
                   <p>{item.price}</p>

@@ -8,6 +8,16 @@ const Kit = ({ addToCart, cartCount }) => {
   const navigate = useNavigate();
   const [kitProducts, setKitProducts] = useState([]);
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    // Remove leading slash if present to avoid double slashes
+    const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+    return `${API_BASE_URL}/${cleanPath}`;
+  };
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/kits`)
       .then(response => response.json())
@@ -31,7 +41,7 @@ const Kit = ({ addToCart, cartCount }) => {
       <main className="kit-grid">
         {kitProducts.map((product, index) => (
           <div className="kit-card" key={product._id || index}>
-            <img src={product.image} alt={product.name} className="kit-image" />
+            <img src={getImageUrl(product.image)} alt={product.name} className="kit-image" />
             <div className="kit-card-content">
               <h3 className="kit-name">{product.name}</h3>
               <p className="kit-description">{product.description}</p>

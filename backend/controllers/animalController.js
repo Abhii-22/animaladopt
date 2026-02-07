@@ -29,7 +29,7 @@ exports.createAnimal = async (req, res) => {
 // Create a new animal with image upload
 exports.uploadAnimal = async (req, res) => {
     const { name, age, breed, type, location, gender, size, description, price, phone, vaccinated, neutered } = req.body;
-  const image = req.file ? req.file.path : '';
+  const image = req.file ? `/uploads/${req.file.filename}` : '';
 
   const animal = new Animal({
     name,
