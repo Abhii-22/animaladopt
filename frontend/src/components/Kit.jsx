@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 import './Kit.css';
 
 
@@ -8,7 +9,7 @@ const Kit = ({ addToCart, cartCount }) => {
   const [kitProducts, setKitProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/kits')
+    fetch(`${API_BASE_URL}/api/kits`)
       .then(response => response.json())
       .then(data => {
         console.log('Fetched kit products:', data);

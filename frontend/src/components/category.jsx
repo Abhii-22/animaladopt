@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 import './category.css';
 
 const Category = () => {
@@ -9,7 +10,7 @@ const Category = () => {
   const [hoveredCategory, setHoveredCategory] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/animals')
+    fetch(`${API_BASE_URL}/api/animals`)
       .then(response => response.json())
       .then(data => setAdoptionAnimals(data))
       .catch(error => console.error('Error fetching animals:', error));

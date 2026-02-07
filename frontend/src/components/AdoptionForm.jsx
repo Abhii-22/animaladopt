@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../config/api';
 import './AdoptionForm.css';
 
 const AdoptionForm = ({ animal, onClose }) => {
@@ -25,7 +26,7 @@ const AdoptionForm = ({ animal, onClose }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5001/api/adoptions', {
+      const response = await fetch(`${API_BASE_URL}/api/adoptions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +54,7 @@ const AdoptionForm = ({ animal, onClose }) => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    return `http://localhost:5001/${imagePath.replace(/\\/g, '/')}`;
+    return `${API_BASE_URL}/${imagePath.replace(/\//g, '/')}`;
   };
 
   return (

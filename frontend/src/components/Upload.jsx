@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 import './Upload.css';
 
 const Upload = () => {
@@ -53,7 +54,7 @@ const Upload = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/animals/upload', {
+      const response = await fetch(`${API_BASE_URL}/api/animals/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

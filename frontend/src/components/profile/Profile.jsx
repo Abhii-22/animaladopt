@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaCamera, FaSignOutAlt, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
+import API_BASE_URL from '../../config/api';
 import './Profile.css';
 
 const Profile = () => {
@@ -48,7 +49,7 @@ const Profile = () => {
             return;
           }
 
-          const response = await fetch('http://localhost:5001/api/animals/my-pets', {
+          const response = await fetch(`${API_BASE_URL}/api/animals/my-pets`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
@@ -125,7 +126,7 @@ const Profile = () => {
     if (window.confirm('Are you sure you want to remove this pet?')) {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5001/api/animals/${petId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/animals/${petId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -300,7 +301,7 @@ const Profile = () => {
                   </div>
                   <div className="pet-image">
                     <img 
-                      src={pet.image.startsWith('http') ? pet.image : `http://localhost:5001/${pet.image.replace(/^[\\/]+/, '')}`} 
+                      src={pet.image.startsWith('http') ? pet.image : `${API_BASE_URL}/${pet.image.replace(/^[\/]+/, '')}`} 
                       alt={pet.name} 
                       onError={(e) => {
                         e.target.onerror = null;

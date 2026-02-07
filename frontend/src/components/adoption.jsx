@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 import './adoption.css';
 import AdoptionForm from './AdoptionForm';
 import ShelterModal from './ShelterModal';
@@ -15,7 +16,7 @@ const Adoption = () => {
   const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/animals')
+    fetch(`${API_BASE_URL}/api/animals`)
       .then(response => response.json())
       .then(data => setAnimals(data))
       .catch(error => console.error('Error fetching animals:', error));
@@ -33,7 +34,7 @@ const Adoption = () => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    return `http://localhost:5001/${imagePath.replace(/\\/g, '/')}`;
+    return `${API_BASE_URL}/${imagePath.replace(/\\/g, '/')}`;
   };
 
   const handleAdoptClick = (animal) => {
