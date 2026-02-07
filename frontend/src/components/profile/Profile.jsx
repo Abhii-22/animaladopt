@@ -301,7 +301,7 @@ const Profile = () => {
                   </div>
                   <div className="pet-image">
                     <img 
-                      src={pet.image.startsWith('http') ? pet.image : `${API_BASE_URL}/${pet.image.startsWith('/') ? pet.image.slice(1) : pet.image}`} 
+                      src={pet.image.startsWith('http') ? pet.image : `${API_BASE_URL}/${pet.image.replace(/\\/g, '/').replace(/^\/+/, '')}`} 
                       alt={pet.name} 
                       onError={(e) => {
                         e.target.onerror = null;

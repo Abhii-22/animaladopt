@@ -54,9 +54,9 @@ const AdoptionForm = ({ animal, onClose }) => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    // Remove leading slash if present to avoid double slashes
-    const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-    return `${API_BASE_URL}/${cleanPath}`;
+    // Convert backslashes to forward slashes and remove leading slash if present
+    const normalizedPath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
+    return `${API_BASE_URL}/${normalizedPath}`;
   };
 
   return (

@@ -18,7 +18,10 @@ const Adoption = () => {
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/animals`)
       .then(response => response.json())
-      .then(data => setAnimals(data))
+      .then(data => {
+        console.log('Animals data received:', data);
+        setAnimals(data);
+      })
       .catch(error => console.error('Error fetching animals:', error));
   }, []);
 
@@ -34,9 +37,11 @@ const Adoption = () => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    // Remove leading slash if present to avoid double slashes
-    const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-    return `${API_BASE_URL}/${cleanPath}`;
+    // Convert backslashes to forward slashes and remove leading slash if present
+    const normalizedPath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
+    const fullUrl = `${API_BASE_URL}/${normalizedPath}`;
+    console.log('Image path:', imagePath, '-> Normalized:', normalizedPath, '-> Full URL:', fullUrl);
+    return fullUrl;
   };
 
   const handleAdoptClick = (animal) => {
@@ -134,7 +139,15 @@ const Adoption = () => {
             </div>
             
             <div className="animal-image">
-                            <img src={getImageUrl(animal.image)} alt={animal.name} />
+                            <img 
+                              src={getImageUrl(animal.image)} 
+                              alt={animal.name}
+                              onError={(e) => {
+                                console.error('Image failed to load:', getImageUrl(animal.image));
+                                e.target.onerror = null;
+                                e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                              }}
+                            />
               <div className="image-overlay">
                 <button className="quick-view-btn" onClick={() => handleAdoptClick(animal)}>
                   Quick View
