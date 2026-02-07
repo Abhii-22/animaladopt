@@ -34,28 +34,7 @@ const Upload = () => {
     }
   };
 
-  const validateForm = () => {
-    const { name, age, breed, location, description, price, phone, image } = formData;
-    if (!name || !age || !breed || !location || !description || !price || !phone || !image) {
-      setError('All fields are required, including the image.');
-      return false;
-    }
-    if (isNaN(age) || age <= 0) {
-      setError('Please enter a valid age.');
-      return false;
-    }
-    if (isNaN(price) || price < 0) {
-      setError('Please enter a valid price.');
-      return false;
-    }
-    if (!/^\d{10}$/.test(phone)) {
-      setError('Please enter a valid 10-digit phone number.');
-      return false;
-    }
-    setError(null);
-    return true;
-  };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
