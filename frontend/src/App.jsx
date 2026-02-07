@@ -11,6 +11,7 @@ import Upload from './components/Upload';
 import SignIn from './components/auth/SignIn';
 import SignUp from './components/auth/SignUp';
 import Profile from './components/profile/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -28,14 +29,25 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-          {/* <Route path="/" element={<LandingPage />} /> */}
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/adoption" element={<Adoption />} />
-          <Route path="/category" element={<Category />} />
-          <Route path="/kit" element={<Kit addToCart={addToCart} cartCount={cartItems.length} />} />
+          <Route path="/adoption" element={
+            <ProtectedRoute>
+              <Adoption />
+            </ProtectedRoute>
+          } />
+          <Route path="/category" element={
+            <ProtectedRoute>
+              <Category />
+            </ProtectedRoute>
+          } />
+          <Route path="/kit" element={
+            <ProtectedRoute>
+              <Kit addToCart={addToCart} cartCount={cartItems.length} />
+            </ProtectedRoute>
+          } />
           <Route path="/cart" element={<Cart cartItems={cartItems} removeFromCart={removeFromCart} />} />
           <Route path="/feedback" element={<FeedbackAndContact />} />
             <Route path="/upload" element={<Upload />} />
