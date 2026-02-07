@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['https://animaladopt-pvi1.vercel.app', 'http://localhost:3000'],
+  origin: ['https://animaladopt.vercel.app', 'https://animaladopt-pvi1.vercel.app', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
