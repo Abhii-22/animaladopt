@@ -15,7 +15,7 @@ const ShelterModal = ({ animal, onClose }) => {
           <p className="shelter-name">{animal.shelter || 'Happy Paws Shelter'}</p>
           <div className="contact-info">
             <p><span className="icon">📍</span>{animal.location}</p>
-            <p><span className="icon">📧</span>{animal.contact || 'contact@happypaws.com'}</p>
+            <p><span className="icon">📧</span>{animal.email || 'contact@happypaws.com'}</p>
             <p><span className="icon">📞</span>{animal.phone || '123-456-7890'}</p>
           </div>
           <p className="footer-note">Please contact the shelter to know more about {animal.name}.</p>

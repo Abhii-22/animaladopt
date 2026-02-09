@@ -28,7 +28,8 @@ exports.createAnimal = async (req, res) => {
 
 // Create a new animal with image upload
 exports.uploadAnimal = async (req, res) => {
-    const { name, age, breed, type, location, gender, size, description, price, phone, vaccinated, neutered } = req.body;
+    console.log('Request body:', req.body);
+    const { name, age, breed, type, location, gender, size, description, price, phone, email, vaccinated, neutered } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : '';
 
   const animal = new Animal({
@@ -42,6 +43,7 @@ exports.uploadAnimal = async (req, res) => {
     description,
     price,
     phone,
+    email,
     vaccinated: vaccinated === 'true',
     neutered: neutered === 'true',
     image,
@@ -50,6 +52,7 @@ exports.uploadAnimal = async (req, res) => {
 
   try {
     const newAnimal = await animal.save();
+    console.log('Saved animal:', newAnimal);
     res.status(201).json(newAnimal);
   } catch (err) {
     res.status(400).json({ message: err.message });

@@ -15,6 +15,7 @@ const Upload = () => {
     description: '',
     price: '',
     phone: '',
+    email: '',
     vaccinated: false,
     neutered: false,
     image: null,
@@ -76,6 +77,7 @@ const Upload = () => {
           description: '',
           price: '',
           phone: '',
+          email: '',
           vaccinated: false,
           neutered: false,
           image: null,
@@ -162,6 +164,11 @@ const Upload = () => {
             <label htmlFor="phone">Phone</label>
             <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} />
           </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
         </div>
 
         <div className="form-group checkbox-group">
