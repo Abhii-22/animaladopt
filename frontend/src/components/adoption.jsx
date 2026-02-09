@@ -202,14 +202,6 @@ const Adoption = () => {
 
 
 
-  const handleShowAdoptionForm = () => {
-
-    setShowAdoptionForm(true);
-
-  };
-
-
-
   const handleCloseAdoptionForm = () => {
 
     setShowAdoptionForm(false);
