@@ -181,41 +181,45 @@ const Adoption = () => {
       {selectedAnimal && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={handleCloseModal}>×</button>
-            <div className="modal-header">
-                            <img src={getImageUrl(selectedAnimal.image)} alt={selectedAnimal.name} className="modal-image" />
-              <div className="modal-info">
-                <h2>{selectedAnimal.name}</h2>
+            <button className="modal-close" onClick={handleCloseModal} aria-label="Close">×</button>
+
+            <section className="modal-profile">
+              <div className="modal-profile-image-wrap">
+                <img src={getImageUrl(selectedAnimal.image)} alt={selectedAnimal.name} className="modal-image" />
+              </div>
+              <div className="modal-profile-info">
+                <h2 className="modal-name">{selectedAnimal.name}</h2>
                 <p className="modal-breed">{selectedAnimal.breed}</p>
-                <div className="modal-meta">
-                  <span>📍 {selectedAnimal.location}</span>
-                  <span>👤 {selectedAnimal.gender}</span>
-                  <span>📏 {selectedAnimal.size}</span>
-                  <span>🎂 {selectedAnimal.age}</span>
+                <p className="modal-location">
+                  <span className="modal-location-icon" aria-hidden>📍</span>
+                  {selectedAnimal.location}
+                </p>
+                <div className="modal-attributes">
+                  <span className="modal-attr"><span className="modal-attr-icon" aria-hidden>👤</span>{selectedAnimal.gender}</span>
+                  <span className="modal-attr"><span className="modal-attr-icon" aria-hidden>📏</span>{selectedAnimal.size}</span>
+                  <span className="modal-attr"><span className="modal-attr-icon" aria-hidden>🎂</span>{selectedAnimal.age}</span>
                 </div>
               </div>
-            </div>
-            <div className="modal-body">
-              <h3>About {selectedAnimal.name}</h3>
-              <p>{selectedAnimal.description}</p>
-              <div className="modal-features">
-                <div className="feature-item">
-                  <span className="feature-icon">💉</span>
-                  <span>{selectedAnimal.vaccinated ? 'Vaccinated' : 'Not Vaccinated'}</span>
-                </div>
-                <div className="feature-item">
-                  <span className="feature-icon">✓</span>
-                  <span>{selectedAnimal.neutered ? 'Neutered/Spayed' : 'Not Neutered/Spayed'}</span>
-                </div>
+            </section>
+
+            <section className="modal-about">
+              <h3 className="modal-about-title">About {selectedAnimal.name}</h3>
+              <p className="modal-about-desc">{selectedAnimal.description}</p>
+              <div className="modal-health-tags">
+                <span className="modal-health-tag">
+                  <span className="modal-health-icon" aria-hidden>💉</span>
+                  {selectedAnimal.vaccinated ? 'Vaccinated' : 'Not Vaccinated'}
+                </span>
+                <span className="modal-health-tag">
+                  <span className="modal-health-icon" aria-hidden>✓</span>
+                  {selectedAnimal.neutered ? 'Neutered/Spayed' : 'Not Neutered/Spayed'}
+                </span>
               </div>
-            </div>
-            <div className="modal-footer">
-              <button className="modal-adopt-btn" onClick={handleShowAdoptionForm}>
-                <span className="btn-icon">❤️</span>
-                Adopt {selectedAnimal.name}
-              </button>
-              <button className="modal-contact-btn" onClick={handleShowShelterModal}>Contact Shelter</button>
-            </div>
+            </section>
+
+            <footer className="modal-actions">
+              <button type="button" className="modal-contact-btn" onClick={handleShowShelterModal}>Contact Shelter</button>
+            </footer>
           </div>
         </div>
       )}
