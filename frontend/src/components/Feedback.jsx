@@ -9,7 +9,7 @@ const testimonials = [
   },
   {
     id: 2,
-    name: 'KIRAN.',
+    name: 'Rohit.',
     feedback: 'I was so impressed with how much they care for the animals. Finding Luna was a dream come true. She is the sweetest cat and has settled in perfectly.',
   },
   {
@@ -51,49 +51,4 @@ const Feedback = () => {
   );
 };
 
-const Contact = () => {
-  return (
-    <section id="contact-section" className="contact-section">
-      <div className="contact-header">
-        <h2 className="contact-title">Get in Touch</h2>
-        <p className="contact-subtitle">
-          We're here to help you on your adoption journey. Reach out with any questions!
-        </p>
-      </div>
-      <div className="contact-content-wrapper">
-        {/* Left Side: Info & Map */}
-        <div className="contact-info-map reveal-left">
-          <div className="contact-details">
-            <h3>Our Location</h3>
-            <p>Channashettikoppa<br/>sagara,shivamogga</p>
-            <p><strong>Email:</strong> contact@petadopt.com</p>
-            <p><strong>Phone:</strong> 1234567890</p>
-          </div>
-          <div className="map-container">
-            <iframe
-             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15476.806401384729!2d75.17522774685337!3d14.124238530919323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbb923821937f57%3A0xea4d77168a987bc4!2sChnnashettikoppa%2C%20Karnataka%20577412!5e0!3m2!1sen!2sin!4v1758462331753!5m2!1sen!2sin" 
-              width="100%"
-              height="250"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              title="Our Location"
-            ></iframe>
-          </div>
-        </div>
-
-      </div>
-    </section>
-  );
-};
-
-const FeedbackAndContact = () => {
-  return (
-    <>
-      <Feedback />
-      <Contact />
-    </>
-  );
-};
-
-export default FeedbackAndContact;
+export default Feedback;
