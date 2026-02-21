@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft, FaEye, FaEyeSlash, FaGoogle, FaFacebook } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import './auth.css';
 
@@ -14,6 +14,8 @@ const SignUp = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const { signup } = useAuth();
 
@@ -50,6 +52,12 @@ const SignUp = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSocialLogin = (provider) => {
+    // Placeholder for social login functionality
+    console.log(`Sign up with ${provider}`);
+    // TODO: Implement actual social login logic
   };
 
   return (
@@ -120,7 +128,7 @@ const SignUp = () => {
             <div className="input-with-icon">
               <FaLock className="input-icon" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password}
@@ -129,6 +137,14 @@ const SignUp = () => {
                 required
                 minLength="6"
               />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </div>
 
@@ -137,7 +153,7 @@ const SignUp = () => {
             <div className="input-with-icon">
               <FaLock className="input-icon" />
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
@@ -146,6 +162,14 @@ const SignUp = () => {
                 required
                 minLength="6"
               />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </div>
 
@@ -153,6 +177,29 @@ const SignUp = () => {
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
+
+        <div className="social-divider">
+          <span>OR</span>
+        </div>
+
+        <div className="social-login">
+          <button 
+            className="social-button" 
+            onClick={() => handleSocialLogin('Google')}
+            disabled={loading}
+          >
+            <FaGoogle />
+            Continue with Google
+          </button>
+          <button 
+            className="social-button" 
+            onClick={() => handleSocialLogin('Facebook')}
+            disabled={loading}
+          >
+            <FaFacebook />
+            Continue with Facebook
+          </button>
+        </div>
 
         <div className="auth-footer">
           Already have an account?{' '}
