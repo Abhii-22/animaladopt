@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft, FaEye, FaEyeSlash, FaGoogle, FaFacebook } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import './auth.css';
 
@@ -52,12 +52,6 @@ const SignUp = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSocialLogin = (provider) => {
-    // Placeholder for social login functionality
-    console.log(`Sign up with ${provider}`);
-    // TODO: Implement actual social login logic
   };
 
   return (
@@ -177,29 +171,6 @@ const SignUp = () => {
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
-
-        <div className="social-divider">
-          <span>OR</span>
-        </div>
-
-        <div className="social-login">
-          <button 
-            className="social-button" 
-            onClick={() => handleSocialLogin('Google')}
-            disabled={loading}
-          >
-            <FaGoogle />
-            Continue with Google
-          </button>
-          <button 
-            className="social-button" 
-            onClick={() => handleSocialLogin('Facebook')}
-            disabled={loading}
-          >
-            <FaFacebook />
-            Continue with Facebook
-          </button>
-        </div>
 
         <div className="auth-footer">
           Already have an account?{' '}
