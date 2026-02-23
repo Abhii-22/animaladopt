@@ -40,18 +40,7 @@ const Adoption = () => {
   // Placeholder image base64
   const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
 
-  // Pre-validate image availability
-  const validateImage = (imageUrl) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = imageUrl;
-      // Timeout after 3 seconds
-      setTimeout(() => resolve(false), 3000);
-    });
-  };
-
+  
   const normalizeText = (text = '') =>
     text.toLowerCase().replace(/[^a-z0-9]/g, '');
 
