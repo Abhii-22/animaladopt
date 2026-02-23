@@ -425,7 +425,9 @@ const Adoption = () => {
                               src={getImageUrl(animal.image)} 
                               alt={animal.name}
                               onError={(e) => {
-                                console.error('Image failed to load:', getImageUrl(animal.image));
+                                const imageUrl = getImageUrl(animal.image);
+                                console.error('Image failed to load:', imageUrl);
+                                console.error('Animal data:', animal.name, animal.id);
                                 e.target.onerror = null;
                                 // Use a base64 encoded SVG placeholder
                                 e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
@@ -515,7 +517,9 @@ const Adoption = () => {
                   onClick={handleImageClick}
                   style={{ cursor: 'pointer' }}
                   onError={(e) => {
-                    console.error('Modal image failed to load:', getImageUrl(selectedAnimal.image));
+                    const imageUrl = getImageUrl(selectedAnimal.image);
+                    console.error('Modal image failed to load:', imageUrl);
+                    console.error('Selected animal data:', selectedAnimal.name, selectedAnimal.id);
                     e.target.onerror = null;
                     e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
                   }}
@@ -628,7 +632,9 @@ const Adoption = () => {
               alt={selectedAnimal.name} 
               className="image-popup-img"
               onError={(e) => {
-                console.error('Popup image failed to load:', getImageUrl(selectedAnimal.image));
+                const imageUrl = getImageUrl(selectedAnimal.image);
+                console.error('Popup image failed to load:', imageUrl);
+                console.error('Popup animal data:', selectedAnimal.name, selectedAnimal.id);
                 e.target.onerror = null;
                 e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
               }}
