@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import API_BASE_URL from '../config/api';
+import API_BASE_URL, { IMAGE_BASE_URL } from '../config/api';
 
 import './adoption.css';
 
@@ -108,9 +108,7 @@ const Adoption = () => {
     fetch(`${API_BASE_URL}/api/animals`)
       .then(response => response.json())
       .then(data => {
-        console.log('Animals data received:', data);
         setAdoptionAnimals(data);
-        setFilteredAnimals(data);
       })
       .catch(error => console.error('Error fetching animals:', error));
   }, []);
@@ -172,9 +170,9 @@ const Adoption = () => {
     // Ensure the path starts with 'uploads/' if it doesn't already
     const finalPath = normalizedPath.startsWith('uploads/') ? normalizedPath : `uploads/${normalizedPath}`;
     
-    const fullUrl = `${API_BASE_URL}/${finalPath}`;
-    
-    console.log('Image path:', imagePath, '-> Normalized:', normalizedPath, '-> Final path:', finalPath, '-> Full URL:', fullUrl);
+    // Use local backend URL for images in development
+    const baseUrl = process.env.NODE_ENV === 'production' ? IMAGE_BASE_URL : 'http://localhost:5001';
+    const fullUrl = `${baseUrl}/${finalPath}`;
     
     return fullUrl;
   };

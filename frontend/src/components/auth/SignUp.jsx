@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
+import EmailVerification from './EmailVerification';
 import './auth.css';
 
 const SignUp = () => {
@@ -16,6 +17,8 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const [pendingUser, setPendingUser] = useState(null);
   const navigate = useNavigate();
   const { signup } = useAuth();
 
@@ -44,15 +47,41 @@ const SignUp = () => {
         email: formData.email,
         password: formData.password
       };
-      await signup(userData);
-      navigate('/');
+      console.log('Sending signup request...');
+      const result = await signup(userData);
+      console.log('Signup response:', result);
+      setPendingUser(result.data.user);
+      setShowVerification(true);
+      console.log('Should show verification now');
     } catch (err) {
-      setError('Failed to create an account. Please try again.');
+      setError(err.message || 'Failed to create an account. Please try again.');
       console.error('Sign up error:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleBackToSignup = () => {
+    setShowVerification(false);
+    setPendingUser(null);
+  };
+
+  const handleVerified = (result) => {
+    // Store token and user data
+    localStorage.setItem('token', result.token);
+    localStorage.setItem('user', JSON.stringify(result.data.user));
+    navigate('/');
+  };
+
+  if (showVerification && pendingUser) {
+    return (
+      <EmailVerification 
+        email={pendingUser.email}
+        onBack={handleBackToSignup}
+        onVerified={handleVerified}
+      />
+    );
+  }
 
   return (
     <div className="auth-container">

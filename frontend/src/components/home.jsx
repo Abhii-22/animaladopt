@@ -20,8 +20,7 @@ const Home = () => {
     <div className="home-container" style={{ backgroundImage: 'url(/images/black_dog.png)' }}>
       <header className="header">
         <div className="logo">
-          <span role="img" aria-label="paw">🐾</span>
-          <span className="logo-text"></span>
+          <img src="/images/PetHomeX.png" alt="PetHomeX Logo" className="logo-image" />
         </div>
         <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <span></span>

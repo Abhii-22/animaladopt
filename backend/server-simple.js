@@ -1,19 +1,46 @@
-const User = require('../models/User');
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { generateOTP, sendVerificationOTP } = require('../utils/emailService');
+const { sendVerificationOTP, generateOTP } = require('./utils/emailService');
+const db = require('./utils/fileDatabase');
 
+const app = express();
+const port = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors({
+  origin: ['https://animaladopt.vercel.app', 'https://animaladopt-pvi1.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Helper functions
 const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback-secret', {
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   });
 };
 
-exports.signup = async (req, res) => {
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 12);
+};
+
+const comparePassword = async (candidatePassword, userPassword) => {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Auth Routes
+app.post('/api/auth/signup', async (req, res) => {
   try {
     console.log('Signup request body:', req.body);
     
     // Check if user already exists
-    const existingUser = await User.findOne({ email: req.body.email });
+    const existingUser = await db.findOne({ email: req.body.email });
     if (existingUser) {
       return res.status(400).json({
         status: 'error',
@@ -25,13 +52,18 @@ exports.signup = async (req, res) => {
     const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+    // Hash password
+    const hashedPassword = await hashPassword(req.body.password);
+
     // Create user with OTP
-    const newUser = await User.create({
+    const newUser = await db.createUser({
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password,
+      password: hashedPassword,
       emailVerificationOTP: otp,
-      emailVerificationExpires: otpExpires
+      emailVerificationExpires: otpExpires.toISOString(),
+      emailVerified: false,
+      role: 'user'
     });
 
     console.log('User created successfully:', newUser.email);
@@ -41,7 +73,7 @@ exports.signup = async (req, res) => {
     
     if (!emailSent) {
       // If email fails, delete the user and return error
-      await User.findByIdAndDelete(newUser._id);
+      await db.deleteOne({ email: newUser.email });
       return res.status(500).json({
         status: 'error',
         message: 'Failed to send verification email. Please try again.'
@@ -67,13 +99,12 @@ exports.signup = async (req, res) => {
       message: err.message
     });
   }
-};
+});
 
-exports.login = async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1) Check if email and password exist
     if (!email || !password) {
       return res.status(400).json({
         status: 'error',
@@ -81,17 +112,25 @@ exports.login = async (req, res) => {
       });
     }
 
-    // 2) Check if user exists && password is correct
-    const user = await User.findOne({ email }).select('+password +emailVerified');
-
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    // Find user
+    const user = await db.findOne({ email });
+    if (!user) {
       return res.status(401).json({
         status: 'error',
         message: 'Incorrect email or password'
       });
     }
 
-    // 3) Check if email is verified
+    // Check password
+    const isPasswordCorrect = await comparePassword(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'Incorrect email or password'
+      });
+    }
+
+    // Check if email is verified
     if (!user.emailVerified) {
       return res.status(403).json({
         status: 'error',
@@ -99,7 +138,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // 4) If everything ok, send token to client
     const token = signToken(user._id);
 
     res.status(200).json({
@@ -120,9 +158,9 @@ exports.login = async (req, res) => {
       message: err.message
     });
   }
-};
+});
 
-exports.verifyEmail = async (req, res) => {
+app.post('/api/auth/verify-email', async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -133,9 +171,8 @@ exports.verifyEmail = async (req, res) => {
       });
     }
 
-    // Find user with OTP fields
-    const user = await User.findOne({ email }).select('+emailVerificationOTP +emailVerificationExpires +emailVerified');
-
+    // Find user
+    const user = await db.findOne({ email });
     if (!user) {
       return res.status(404).json({
         status: 'error',
@@ -158,7 +195,7 @@ exports.verifyEmail = async (req, res) => {
       });
     }
 
-    if (Date.now() > user.emailVerificationExpires) {
+    if (Date.now() > new Date(user.emailVerificationExpires).getTime()) {
       return res.status(400).json({
         status: 'error',
         message: 'Verification code has expired'
@@ -166,12 +203,12 @@ exports.verifyEmail = async (req, res) => {
     }
 
     // Verify email and clear OTP fields
-    user.emailVerified = true;
-    user.emailVerificationOTP = undefined;
-    user.emailVerificationExpires = undefined;
-    await user.save();
+    await db.findByIdAndUpdate(user._id, {
+      emailVerified: true,
+      emailVerificationOTP: undefined,
+      emailVerificationExpires: undefined
+    });
 
-    // Generate token for automatic login after verification
     const token = signToken(user._id);
 
     res.status(200).json({
@@ -195,9 +232,9 @@ exports.verifyEmail = async (req, res) => {
       message: err.message
     });
   }
-};
+});
 
-exports.resendVerificationOTP = async (req, res) => {
+app.post('/api/auth/resend-verification', async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -208,9 +245,7 @@ exports.resendVerificationOTP = async (req, res) => {
       });
     }
 
-    // Find user
-    const user = await User.findOne({ email }).select('+emailVerified');
-
+    const user = await db.findOne({ email });
     if (!user) {
       return res.status(404).json({
         status: 'error',
@@ -225,14 +260,15 @@ exports.resendVerificationOTP = async (req, res) => {
       });
     }
 
-    // Generate new OTP and set expiration
+    // Generate new OTP
     const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
     // Update user with new OTP
-    user.emailVerificationOTP = otp;
-    user.emailVerificationExpires = otpExpires;
-    await user.save();
+    await db.findByIdAndUpdate(user._id, {
+      emailVerificationOTP: otp,
+      emailVerificationExpires: otpExpires.toISOString()
+    });
 
     // Send verification OTP
     const emailSent = await sendVerificationOTP(user.email, user.name, otp);
@@ -255,45 +291,10 @@ exports.resendVerificationOTP = async (req, res) => {
       message: err.message
     });
   }
-};
+});
 
-exports.protect = async (req, res, next) => {
-  try {
-    let token;
-    // 1) Getting token from header
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
-    }
-
-    if (!token) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'You are not logged in! Please log in to get access.'
-      });
-    }
-
-    // 2) Verification token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'The user belonging to this token no longer exists.'
-      });
-    }
-
-    // GRANT ACCESS TO PROTECTED ROUTE
-    req.user = currentUser;
-    next();
-  } catch (err) {
-    res.status(401).json({
-      status: 'error',
-      message: 'You are not logged in! Please log in to get access.'
-    });
-  }
-};
+// Start server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+  console.log('Using file-based database for testing');
+});

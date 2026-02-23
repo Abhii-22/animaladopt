@@ -67,14 +67,69 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       
       if (response.ok) {
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        localStorage.setItem('token', data.token);
-        setCurrentUser(data.data.user);
+        // Don't set user and token yet - wait for email verification
+        return data;
       } else {
         throw new Error(data.message || 'Signup failed');
       }
     } catch (error) {
       console.error('Signup error:', error);
+      throw error;
+    }
+  };
+
+  // Verify email function
+  const verifyEmail = async (email, otp) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          otp
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        localStorage.setItem('token', data.token);
+        setCurrentUser(data.data.user);
+        return data;
+      } else {
+        throw new Error(data.message || 'Email verification failed');
+      }
+    } catch (error) {
+      console.error('Email verification error:', error);
+      throw error;
+    }
+  };
+
+  // Resend verification OTP function
+  const resendVerificationOTP = async (email) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        return data;
+      } else {
+        throw new Error(data.message || 'Failed to resend verification code');
+      }
+    } catch (error) {
+      console.error('Resend verification error:', error);
       throw error;
     }
   };
@@ -90,6 +145,8 @@ export const AuthProvider = ({ children }) => {
     currentUser,
     signin,
     signup,
+    verifyEmail,
+    resendVerificationOTP,
     signout,
   };
 

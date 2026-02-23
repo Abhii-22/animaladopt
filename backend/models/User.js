@@ -32,6 +32,19 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  emailVerificationOTP: {
+    type: String,
+    select: false
+  },
+  emailVerificationExpires: {
+    type: Date,
+    select: false
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+    select: false
   }
 });
 
