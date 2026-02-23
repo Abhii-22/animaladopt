@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaEnvelope, FaKey, FaArrowLeft, FaRedo } from 'react-icons/fa';
+import { FaEnvelope, FaArrowLeft, FaRedo } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import './auth.css';
 

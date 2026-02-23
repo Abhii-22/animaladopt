@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -26,9 +26,9 @@ const Adoption = () => {
 
   const [selectedType, setSelectedType] = useState('all');
 
-  const [selectedAge, setSelectedAge] = useState('all');
+  const [selectedAge] = useState('all');
 
-  const [selectedGender, setSelectedGender] = useState('all');
+  const [selectedGender] = useState('all');
 
   const [showAdoptionForm, setShowAdoptionForm] = useState(false);
 
@@ -36,7 +36,6 @@ const Adoption = () => {
 
   const [showShelterModal, setShowShelterModal] = useState(false);
 
-  const [validImages, setValidImages] = useState(new Set());
 
   // Placeholder image base64
   const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
@@ -53,71 +52,10 @@ const Adoption = () => {
     });
   };
 
-  // Check all images on component mount
-  useEffect(() => {
-    const checkAllImages = async () => {
-      const animalsWithValidImages = await Promise.all(
-        adoptionAnimals.map(async (animal) => {
-          const imageUrl = getImageUrl(animal.image);
-          const isValid = await validateImage(imageUrl);
-          return {
-            ...animal,
-            hasValidImage: isValid
-          };
-        })
-      );
-      // Update animals with image validation status
-      setAdoptionAnimals(animalsWithValidImages);
-      setFilteredAnimals(animalsWithValidImages);
-    };
-
-    if (adoptionAnimals.length > 0) {
-      checkAllImages();
-    }
-  }, [adoptionAnimals.length]); // Only run when animals count changes
-
-  // Update filtered animals when filters change
-  useEffect(() => {
-    const filtered = adoptionAnimals.filter(animal => {
-      const matchesSearch =
-        animal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        animal.breed.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesLocation = !locationTerm || 
-        isFuzzyMatch(animal.location, locationTerm);
-
-      const matchesType =
-        selectedType === 'all' ||
-        animal.type?.toLowerCase() === selectedType.toLowerCase();
-
-      const matchesAge =
-        selectedAge === 'all' ||
-        animal.age?.toLowerCase() === selectedAge.toLowerCase();
-
-      const matchesGender =
-        selectedGender === 'all' ||
-        animal.gender?.toLowerCase() === selectedGender.toLowerCase();
-
-      return matchesSearch && matchesLocation && matchesType && matchesAge && matchesGender;
-    });
-
-    setFilteredAnimals(filtered);
-  }, [adoptionAnimals, searchTerm, locationTerm, selectedType, selectedAge, selectedGender]);
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/animals`)
-      .then(response => response.json())
-      .then(data => {
-        setAdoptionAnimals(data);
-      })
-      .catch(error => console.error('Error fetching animals:', error));
-  }, []);
-
-
   const normalizeText = (text = '') =>
     text.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-  const isFuzzyMatch = (source = '', query = '') => {
+  const isFuzzyMatch = useCallback((source = '', query = '') => {
     const src = normalizeText(source);
     const q = normalizeText(query);
 
@@ -152,7 +90,44 @@ const Adoption = () => {
     const distance = dp[len1][len2];
     const threshold = 3; // allow a few typos
     return distance <= threshold;
-  };
+  }, []);
+
+  // Update filtered animals when filters change
+  useEffect(() => {
+    const filtered = adoptionAnimals.filter(animal => {
+      const matchesSearch =
+        animal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        animal.breed.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesLocation = !locationTerm || 
+        isFuzzyMatch(animal.location, locationTerm);
+
+      const matchesType =
+        selectedType === 'all' ||
+        animal.type?.toLowerCase() === selectedType.toLowerCase();
+
+      const matchesAge =
+        selectedAge === 'all' ||
+        animal.age?.toLowerCase() === selectedAge.toLowerCase();
+
+      const matchesGender =
+        selectedGender === 'all' ||
+        animal.gender?.toLowerCase() === selectedGender.toLowerCase();
+
+      return matchesSearch && matchesLocation && matchesType && matchesAge && matchesGender;
+    });
+
+    setFilteredAnimals(filtered);
+  }, [adoptionAnimals, searchTerm, locationTerm, selectedType, selectedAge, selectedGender, isFuzzyMatch]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/animals`)
+      .then(response => response.json())
+      .then(data => {
+        setAdoptionAnimals(data);
+      })
+      .catch(error => console.error('Error fetching animals:', error));
+  }, []);
 
 
   const getImageUrl = (imagePath) => {
