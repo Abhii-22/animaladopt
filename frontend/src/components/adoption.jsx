@@ -10,162 +10,156 @@ import AdoptionForm from './AdoptionForm';
 
 import ShelterModal from './ShelterModal';
 
-
-
-
-
 const Adoption = () => {
 
   const navigate = useNavigate();
 
-  const [animals, setAnimals] = useState([]);
+  const [adoptionAnimals, setAdoptionAnimals] = useState([]);
+
+  const [filteredAnimals, setFilteredAnimals] = useState([]);
 
   const [selectedAnimal, setSelectedAnimal] = useState(null);
-
-  const [showAdoptionForm, setShowAdoptionForm] = useState(false);
-
-  const [showShelterModal, setShowShelterModal] = useState(false);
-
-  const [showImagePopup, setShowImagePopup] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
 
   const [locationTerm, setLocationTerm] = useState('');
 
-  const [filterType, setFilterType] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
 
+  const [selectedAge, setSelectedAge] = useState('all');
 
+  const [selectedGender, setSelectedGender] = useState('all');
+
+  const [showAdoptionForm, setShowAdoptionForm] = useState(false);
+
+  const [showImagePopup, setShowImagePopup] = useState(false);
+
+  const [showShelterModal, setShowShelterModal] = useState(false);
+
+  const [validImages, setValidImages] = useState(new Set());
+
+  // Placeholder image base64
+  const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
+
+  // Pre-validate image availability
+  const validateImage = (imageUrl) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = imageUrl;
+      // Timeout after 3 seconds
+      setTimeout(() => resolve(false), 3000);
+    });
+  };
+
+  // Check all images on component mount
+  useEffect(() => {
+    const checkAllImages = async () => {
+      const animalsWithValidImages = await Promise.all(
+        adoptionAnimals.map(async (animal) => {
+          const imageUrl = getImageUrl(animal.image);
+          const isValid = await validateImage(imageUrl);
+          return {
+            ...animal,
+            hasValidImage: isValid
+          };
+        })
+      );
+      // Update animals with image validation status
+      setAdoptionAnimals(animalsWithValidImages);
+      setFilteredAnimals(animalsWithValidImages);
+    };
+
+    if (adoptionAnimals.length > 0) {
+      checkAllImages();
+    }
+  }, [adoptionAnimals.length]); // Only run when animals count changes
+
+  // Update filtered animals when filters change
+  useEffect(() => {
+    const filtered = adoptionAnimals.filter(animal => {
+      const matchesSearch =
+        animal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        animal.breed.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesLocation = !locationTerm || 
+        isFuzzyMatch(animal.location, locationTerm);
+
+      const matchesType =
+        selectedType === 'all' ||
+        animal.type?.toLowerCase() === selectedType.toLowerCase();
+
+      const matchesAge =
+        selectedAge === 'all' ||
+        animal.age?.toLowerCase() === selectedAge.toLowerCase();
+
+      const matchesGender =
+        selectedGender === 'all' ||
+        animal.gender?.toLowerCase() === selectedGender.toLowerCase();
+
+      return matchesSearch && matchesLocation && matchesType && matchesAge && matchesGender;
+    });
+
+    setFilteredAnimals(filtered);
+  }, [adoptionAnimals, searchTerm, locationTerm, selectedType, selectedAge, selectedGender]);
 
   useEffect(() => {
-
     fetch(`${API_BASE_URL}/api/animals`)
-
       .then(response => response.json())
-
       .then(data => {
-
         console.log('Animals data received:', data);
-
-        setAnimals(data);
-
+        setAdoptionAnimals(data);
+        setFilteredAnimals(data);
       })
-
       .catch(error => console.error('Error fetching animals:', error));
-
   }, []);
 
 
-
   const normalizeText = (text = '') =>
-
     text.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-
-
   const isFuzzyMatch = (source = '', query = '') => {
-
     const src = normalizeText(source);
-
     const q = normalizeText(query);
-
-
 
     if (!q) return true;
 
-
-
     if (src.includes(q)) return true;
 
-
-
     // Simple Levenshtein distance for short strings
-
     const len1 = src.length;
-
     const len2 = q.length;
 
     if (!len1 || !len2) return false;
 
-
-
     const dp = Array.from({ length: len1 + 1 }, () =>
-
       new Array(len2 + 1).fill(0)
-
     );
 
-
-
     for (let i = 0; i <= len1; i++) dp[i][0] = i;
-
     for (let j = 0; j <= len2; j++) dp[0][j] = j;
 
-
-
     for (let i = 1; i <= len1; i++) {
-
       for (let j = 1; j <= len2; j++) {
-
         const cost = src[i - 1] === q[j - 1] ? 0 : 1;
-
         dp[i][j] = Math.min(
-
           dp[i - 1][j] + 1,
-
           dp[i][j - 1] + 1,
-
           dp[i - 1][j - 1] + cost
-
         );
-
       }
-
     }
 
-
-
     const distance = dp[len1][len2];
-
     const threshold = 3; // allow a few typos
-
     return distance <= threshold;
-
   };
-
-
-
-  const filteredAnimals = animals.filter(animal => {
-
-    const matchesSearch =
-
-      animal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-
-      animal.breed.toLowerCase().includes(searchTerm.toLowerCase());
-
-
-
-    const matchesLocation = isFuzzyMatch(animal.location, locationTerm);
-
-
-
-    const matchesFilter =
-
-      filterType === 'all' ||
-
-      animal.type?.toLowerCase() === filterType.toLowerCase();
-
-
-
-    return matchesSearch && matchesLocation && matchesFilter;
-
-  });
-
 
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
-      // Return a local placeholder or a valid external placeholder
-      return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
+      return placeholderImage;
     }
     
     if (imagePath.startsWith('http')) {
@@ -183,6 +177,17 @@ const Adoption = () => {
     console.log('Image path:', imagePath, '-> Normalized:', normalizedPath, '-> Final path:', finalPath, '-> Full URL:', fullUrl);
     
     return fullUrl;
+  };
+
+  // Smart image source that prevents errors
+  const getSafeImageSrc = (animal) => {
+    // If we already know this image is invalid, return placeholder
+    if (animal.hasValidImage === false) {
+      return placeholderImage;
+    }
+    
+    // Otherwise try the actual image URL
+    return getImageUrl(animal.image);
   };
 
 
@@ -321,9 +326,9 @@ const Adoption = () => {
 
           <button 
 
-            className={`filter-btn ${filterType === 'all' ? 'active' : ''}`}
+            className={`filter-btn ${selectedType === 'all' ? 'active' : ''}`}
 
-            onClick={() => setFilterType('all')}
+            onClick={() => setSelectedType('all')}
 
           >
 
@@ -333,9 +338,9 @@ const Adoption = () => {
 
           <button 
 
-            className={`filter-btn ${filterType === 'dog' ? 'active' : ''}`}
+            className={`filter-btn ${selectedType === 'dog' ? 'active' : ''}`}
 
-            onClick={() => setFilterType('dog')}
+            onClick={() => setSelectedType('dog')}
 
           >
 
@@ -345,9 +350,9 @@ const Adoption = () => {
 
           <button 
 
-            className={`filter-btn ${filterType === 'cat' ? 'active' : ''}`}
+            className={`filter-btn ${selectedType === 'cat' ? 'active' : ''}`}
 
-            onClick={() => setFilterType('cat')}
+            onClick={() => setSelectedType('cat')}
 
           >
 
@@ -357,9 +362,9 @@ const Adoption = () => {
 
           <button 
 
-            className={`filter-btn ${filterType === 'farm' ? 'active' : ''}`}
+            className={`filter-btn ${selectedType === 'farm' ? 'active' : ''}`}
 
-            onClick={() => setFilterType('farm')}
+            onClick={() => setSelectedType('farm')}
 
           >
 
@@ -369,9 +374,9 @@ const Adoption = () => {
 
           <button 
 
-            className={`filter-btn ${filterType === 'bird' ? 'active' : ''}`}
+            className={`filter-btn ${selectedType === 'bird' ? 'active' : ''}`}
 
-            onClick={() => setFilterType('bird')}
+            onClick={() => setSelectedType('bird')}
 
           >
 
@@ -422,16 +427,8 @@ const Adoption = () => {
             <div className="animal-image">
 
                             <img 
-                              src={getImageUrl(animal.image)} 
+                              src={getSafeImageSrc(animal)} 
                               alt={animal.name}
-                              onError={(e) => {
-                                const imageUrl = getImageUrl(animal.image);
-                                console.error('Image failed to load:', imageUrl);
-                                console.error('Animal data:', animal.name, animal.id);
-                                e.target.onerror = null;
-                                // Use a base64 encoded SVG placeholder
-                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
-                              }}
                             />
 
               <div className="image-overlay">
@@ -511,18 +508,11 @@ const Adoption = () => {
               <div className="modal-profile-image-wrap">
 
                 <img 
-                  src={getImageUrl(selectedAnimal.image)} 
+                  src={getSafeImageSrc(selectedAnimal)} 
                   alt={selectedAnimal.name} 
                   className="modal-image" 
                   onClick={handleImageClick}
                   style={{ cursor: 'pointer' }}
-                  onError={(e) => {
-                    const imageUrl = getImageUrl(selectedAnimal.image);
-                    console.error('Modal image failed to load:', imageUrl);
-                    console.error('Selected animal data:', selectedAnimal.name, selectedAnimal.id);
-                    e.target.onerror = null;
-                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
-                  }}
                 />
 
               </div>
@@ -628,16 +618,9 @@ const Adoption = () => {
           <div className="image-popup-content" onClick={(e) => e.stopPropagation()}>
 
             <img 
-              src={getImageUrl(selectedAnimal.image)} 
+              src={getSafeImageSrc(selectedAnimal)} 
               alt={selectedAnimal.name} 
               className="image-popup-img"
-              onError={(e) => {
-                const imageUrl = getImageUrl(selectedAnimal.image);
-                console.error('Popup image failed to load:', imageUrl);
-                console.error('Popup animal data:', selectedAnimal.name, selectedAnimal.id);
-                e.target.onerror = null;
-                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
-              }}
             />
 
           </div>
