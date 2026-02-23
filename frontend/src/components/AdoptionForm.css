@@ -16,12 +16,12 @@
 }
 
 .adoption-form-modal-content {
-  background: #ffffff;
+  background: #1a1a1a;
   border-radius: 20px;
   width: 90%;
   max-width: 900px;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   font-family: 'Poppins', sans-serif;
   display: flex;
   flex-direction: row;
@@ -43,22 +43,23 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background: #f1f1f1;
-  border: none;
+  background: #333;
+  border: 2px solid #ffffff;
   border-radius: 50%;
   width: 30px;
   height: 30px;
   font-size: 1.2rem;
-  color: #888;
+  color: #ffffff;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: background 0.3s, color 0.3s;
+  font-weight: bold;
 }
 
 .modal-close:hover {
-  background: #e0e0e0;
+  background: #ffffff;
   color: #333;
 }
 
@@ -72,25 +73,26 @@
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  color: #aaa;
+  color: #ffffff;
+  font-weight: 500;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.95rem;
 }
 
 .form-group input[type="text"],
 .form-group input[type="tel"],
 .form-group input[type="email"] {
-  background-color: #fff;
-  color: #333;
+  background-color: #333;
+  color: #ffffff;
   width: 100%;
   padding: 12px 15px 12px 40px;
-  border: 1px solid #ddd;
+  border: 2px solid #666;
   border-radius: 8px;
   font-size: 0.95rem;
   font-family: 'Poppins', sans-serif;
@@ -115,9 +117,10 @@
 }
 
 .form-group input[readonly] {
-  background-color: #f7f7f7;
+  background-color: #555;
   cursor: not-allowed;
-  color: #888;
+  color: #ffffff;
+  font-weight: 500;
 }
 
 .radio-group {
@@ -130,9 +133,10 @@
 .radio-group label {
   display: flex;
   align-items: center;
-  font-weight: 500;
-  color: #555;
+  font-weight: 600;
+  color: #ffffff;
   cursor: pointer;
+  font-size: 0.95rem;
 }
 
 .radio-group input[type="radio"] {
@@ -142,7 +146,7 @@
 
 .animal-image-container {
   flex: 1;
-  background: #f8f9fa;
+  background: #2a2a2a;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -167,10 +171,11 @@
 }
 
 .form-fields-container h2 {
-  color: #2c3e50;
+  color: #ffffff;
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
   text-align: center;
+  font-weight: 700;
 }
 
 .submit-btn {
@@ -207,7 +212,7 @@
     min-height: 250px;
     max-height: 40vh;
     padding: 0.5rem;
-    background: #f0f0f0;
+    background: #2a2a2a;
   }
   
   .animal-form-image {

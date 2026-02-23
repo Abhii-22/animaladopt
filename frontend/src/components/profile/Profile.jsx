@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaCamera, FaSignOutAlt, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import API_BASE_URL from '../../config/api';
 import './Profile.css';
@@ -12,7 +12,6 @@ const Profile = () => {
     name: '',
     email: '',
     phone: '',
-    profilePhoto: null,
   });
   
   const [pets, setPets] = useState([]);
@@ -20,8 +19,6 @@ const Profile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...user });
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [preview, setPreview] = useState('');
 
   // Load user data and pets
   useEffect(() => {
@@ -31,13 +28,11 @@ const Profile = () => {
           name: currentUser.name || '',
           email: currentUser.email || '',
           phone: currentUser.phone || '',
-          profilePhoto: currentUser.profilePhoto || null,
         });
         setFormData({
           name: currentUser.name || '',
           email: currentUser.email || '',
           phone: currentUser.phone || '',
-          profilePhoto: currentUser.profilePhoto || null,
         });
 
         // Fetch user's pets
@@ -73,35 +68,6 @@ const Profile = () => {
     fetchUserData();
   }, [currentUser]);
 
-
-  // Handle file selection for profile photo
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle profile photo upload
-  const handlePhotoUpload = () => {
-    // TODO: Implement actual file upload to server
-    if (selectedFile) {
-      // Simulate upload
-      setTimeout(() => {
-        setUser(prev => ({
-          ...prev,
-          profilePhoto: preview
-        }));
-        setSelectedFile(null);
-        alert('Profile photo updated successfully!');
-      }, 1000);
-    }
-  };
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -157,33 +123,6 @@ const Profile = () => {
   return (
     <div className="profile-container">
       <div className="profile-header">
-        <div className="profile-photo-container">
-          {user.profilePhoto ? (
-            <img src={user.profilePhoto} alt="Profile" className="profile-photo" />
-          ) : (
-            <div className="profile-photo-placeholder">
-              <FaUser size={40} />
-            </div>
-          )}
-          <div className="photo-upload">
-            <input
-              type="file"
-              id="profile-photo"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="photo-upload-input"
-            />
-            <label htmlFor="profile-photo" className="upload-button">
-              <FaCamera /> Change Photo
-            </label>
-            {selectedFile && (
-              <button onClick={handlePhotoUpload} className="save-photo-button">
-                Save Photo
-              </button>
-            )}
-          </div>
-        </div>
-        
         <div className="profile-info">
           <h2>{user.name}</h2>
           <p><strong>Email:</strong> {user.email}</p>
@@ -305,7 +244,7 @@ const Profile = () => {
                       alt={pet.name} 
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBmaWxsPSIjQ0NDQ0NDIi8+CjxwYXRoIGQ9Ik0xMzcuNSA4Ny41SDE2Mi41VjExMi41SDEzNy41Vjg3LjVaIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
                       }}
                       style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                     />
