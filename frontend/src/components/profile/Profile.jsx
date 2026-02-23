@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaSignOutAlt, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaSignOutAlt, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import API_BASE_URL from '../../config/api';
 import './Profile.css';
