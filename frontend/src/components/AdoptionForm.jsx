@@ -68,6 +68,7 @@ const AdoptionForm = ({ animal, onClose }) => {
             src={getImageUrl(animal.image)} 
             alt={animal.name} 
             className="animal-form-image" 
+            loading="lazy"
             onError={(e) => {
               e.target.onerror = null; 
               e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';

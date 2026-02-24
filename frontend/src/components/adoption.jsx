@@ -15,26 +15,19 @@ const Adoption = () => {
   const navigate = useNavigate();
 
   const [adoptionAnimals, setAdoptionAnimals] = useState([]);
-
   const [filteredAnimals, setFilteredAnimals] = useState([]);
-
   const [selectedAnimal, setSelectedAnimal] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const [locationTerm, setLocationTerm] = useState('');
-
   const [selectedType, setSelectedType] = useState('all');
-
   const [selectedAge] = useState('all');
-
   const [selectedGender] = useState('all');
-
   const [showAdoptionForm, setShowAdoptionForm] = useState(false);
-
   const [showImagePopup, setShowImagePopup] = useState(false);
-
   const [showShelterModal, setShowShelterModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(12);
 
 
   // Placeholder image base64
@@ -57,6 +50,12 @@ const Adoption = () => {
     const len2 = q.length;
 
     if (!len1 || !len2) return false;
+
+    // Fast-fail when length difference is already too big to be a close match
+    const maxAllowedDifference = 3;
+    if (Math.abs(len1 - len2) > maxAllowedDifference) {
+      return false;
+    }
 
     const dp = Array.from({ length: len1 + 1 }, () =>
       new Array(len2 + 1).fill(0)
@@ -109,14 +108,36 @@ const Adoption = () => {
     setFilteredAnimals(filtered);
   }, [adoptionAnimals, searchTerm, locationTerm, selectedType, selectedAge, selectedGender, isFuzzyMatch]);
 
-  useEffect(() => {
+  const fetchAnimals = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
+
     fetch(`${API_BASE_URL}/api/animals`)
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to load animals');
+        }
+        return response.json();
+      })
       .then(data => {
         setAdoptionAnimals(data);
+        setIsLoading(false);
       })
-      .catch(error => console.error('Error fetching animals:', error));
+      .catch(error => {
+        console.error('Error fetching animals:', error);
+        setError(error.message || 'Something went wrong while loading animals.');
+        setIsLoading(false);
+      });
   }, []);
+
+  useEffect(() => {
+    fetchAnimals();
+  }, [fetchAnimals]);
+
+  useEffect(() => {
+    // Reset visible items when filters change
+    setVisibleCount(12);
+  }, [searchTerm, locationTerm, selectedType, selectedAge, selectedGender]);
 
 
   const getImageUrl = (imagePath) => {
@@ -356,7 +377,29 @@ const Adoption = () => {
 
       <div className="animals-grid">
 
-        {filteredAnimals.length === 0 ? (
+        {isLoading ? (
+
+          <div className="loading-state">
+
+            <p>Loading animals for adoption...</p>
+
+          </div>
+
+        ) : error ? (
+
+          <div className="error-state">
+
+            <p>Failed to load animals: {error}</p>
+
+            <button type="button" className="retry-btn" onClick={fetchAnimals}>
+
+              Try again
+
+            </button>
+
+          </div>
+
+        ) : filteredAnimals.length === 0 ? (
 
           <div className="no-animals-message">
 
@@ -366,7 +409,9 @@ const Adoption = () => {
 
         ) : (
 
-          filteredAnimals.map((animal) => (
+          <>
+
+          {filteredAnimals.slice(0, visibleCount).map((animal) => (
 
           <div key={animal._id} className="adoption-card">
 
@@ -388,10 +433,11 @@ const Adoption = () => {
 
             <div className="animal-image">
 
-                            <img 
-                              src={getSafeImageSrc(animal)} 
-                              alt={animal.name}
-                            />
+              <img 
+                src={getSafeImageSrc(animal)} 
+                alt={animal.name}
+                loading="lazy"
+              />
 
               <div className="image-overlay">
 
@@ -445,7 +491,27 @@ const Adoption = () => {
 
           </div>
 
-          ))
+          ))}
+
+          {visibleCount < filteredAnimals.length && (
+
+            <div className="load-more-wrapper">
+
+              <button
+                type="button"
+                className="load-more-btn"
+                onClick={() => setVisibleCount((prev) => prev + 12)}
+              >
+
+                Load more
+
+              </button>
+
+            </div>
+
+          )}
+
+          </>
 
         )}
 
@@ -475,6 +541,7 @@ const Adoption = () => {
                   className="modal-image" 
                   onClick={handleImageClick}
                   style={{ cursor: 'pointer' }}
+                  loading="lazy"
                 />
 
               </div>
@@ -583,6 +650,7 @@ const Adoption = () => {
               src={getSafeImageSrc(selectedAnimal)} 
               alt={selectedAnimal.name} 
               className="image-popup-img"
+              loading="lazy"
             />
 
           </div>
