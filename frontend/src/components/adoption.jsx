@@ -120,6 +120,8 @@ const Adoption = () => {
         return response.json();
       })
       .then(data => {
+        console.log('Fetched animals data:', data);
+        console.log('Sample animal image path:', data[0]?.image);
         setAdoptionAnimals(data);
         setIsLoading(false);
       })
@@ -141,23 +143,38 @@ const Adoption = () => {
 
 
   const getImageUrl = (imagePath) => {
+    console.log('getImageUrl called with:', imagePath);
+    
     if (!imagePath) {
+      console.log('No image path, returning placeholder');
       return placeholderImage;
     }
     
     if (imagePath.startsWith('http')) {
+      console.log('Image path is already a full URL:', imagePath);
       return imagePath;
     }
     
     // Convert backslashes to forward slashes and remove leading slash if present
     const normalizedPath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
     
-    // Ensure the path starts with 'uploads/' if it doesn't already
-    const finalPath = normalizedPath.startsWith('uploads/') ? normalizedPath : `uploads/${normalizedPath}`;
+    // Try different path formats
+    let finalPath;
+    if (normalizedPath.startsWith('uploads/')) {
+      finalPath = normalizedPath;
+    } else if (imagePath.startsWith('/uploads/')) {
+      finalPath = imagePath.replace(/^\/+/, '');
+    } else {
+      finalPath = `uploads/${normalizedPath}`;
+    }
     
     // Use the same base URL for both development and production
     const baseUrl = IMAGE_BASE_URL;
     const fullUrl = `${baseUrl}/${finalPath}`;
+    
+    console.log('Constructed image URL:', fullUrl);
+    console.log('Base URL:', baseUrl);
+    console.log('Final path:', finalPath);
     
     return fullUrl;
   };

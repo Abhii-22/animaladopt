@@ -54,8 +54,16 @@ const Profile = () => {
           if (response.ok) {
             const data = await response.json();
             setPets(data.data?.animals || []);
+          } else if (response.status === 401) {
+            // Token is invalid or user no longer exists
+            console.error('Authentication failed - clearing local storage');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            signout();
+            navigate('/signin');
           } else {
-            console.error('Failed to fetch pets:', await response.text());
+            const errorData = await response.json();
+            console.error('Failed to fetch pets:', errorData.message || 'Unknown error');
           }
         } catch (error) {
           console.error('Error fetching pets:', error);
@@ -66,7 +74,7 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, [currentUser]);
+  }, [currentUser, navigate, signout]);
 
 
   // Handle form input changes
@@ -103,6 +111,13 @@ const Profile = () => {
         if (response.ok) {
           setPets(pets.filter(pet => pet._id !== petId));
           alert('Pet removed successfully!');
+        } else if (response.status === 401) {
+          // Token is invalid or user no longer exists
+          console.error('Authentication failed - clearing local storage');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          signout();
+          navigate('/signin');
         } else {
           const errorData = await response.json();
           alert('Failed to remove pet: ' + errorData.message);

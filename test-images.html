@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+</head>
+<body>
+    <h2>Testing Backend Image Access</h2>
+    <p>Base URL: <span id="baseUrl"></span></p>
+    <p>Testing image URL: <span id="testUrl"></span></p>
+    <img id="testImage" style="max-width: 300px; border: 1px solid #ccc;" />
+    
+    <script>
+        const baseUrl = 'http://localhost:5001';
+        const testImagePath = 'uploads/1771910290131.jpeg'; // Use an actual image filename
+        const testUrl = `${baseUrl}/${testImagePath}`;
+        
+        document.getElementById('baseUrl').textContent = baseUrl;
+        document.getElementById('testUrl').textContent = testUrl;
+        document.getElementById('testImage').src = testUrl;
+        
+        // Test image loading
+        document.getElementById('testImage').onload = function() {
+            console.log('Image loaded successfully!');
+        };
+        
+        document.getElementById('testImage').onerror = function() {
+            console.error('Failed to load image:', testUrl);
+            document.getElementById('testImage').alt = 'Failed to load image. Check if backend is running on ' + baseUrl;
+        };
+    </script>
+</body>
+</html>

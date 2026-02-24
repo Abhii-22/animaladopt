@@ -84,6 +84,15 @@ const Upload = () => {
         });
         setImagePreview(null);
         setError(null);
+      } else if (response.status === 401) {
+        // Token is invalid or user no longer exists
+        console.error('Authentication failed - clearing local storage');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setError('Your session has expired. Please log in again.');
+        setTimeout(() => {
+          navigate('/signin');
+        }, 2000);
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Failed to upload animal. Please try again.');
@@ -158,7 +167,16 @@ const Upload = () => {
         <div className="form-row">
           <div className="form-group form-group-half">
             <label htmlFor="price">Adoption Fee (₹)</label>
-            <input type="number" id="price" name="price" value={formData.price} onChange={handleChange} />
+            <input 
+              type="text" 
+              id="price" 
+              name="price" 
+              value={formData.price} 
+              onChange={handleChange} 
+              placeholder="e.g., 455555"
+              pattern="[0-9]*"
+              inputMode="numeric"
+            />
           </div>
           <div className="form-group form-group-half">
             <label htmlFor="phone">Phone</label>
