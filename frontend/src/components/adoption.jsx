@@ -155,8 +155,8 @@ const Adoption = () => {
     // Ensure the path starts with 'uploads/' if it doesn't already
     const finalPath = normalizedPath.startsWith('uploads/') ? normalizedPath : `uploads/${normalizedPath}`;
     
-    // Use local backend URL for images in development
-    const baseUrl = process.env.NODE_ENV === 'production' ? IMAGE_BASE_URL : 'http://localhost:5001';
+    // Use the same base URL for both development and production
+    const baseUrl = IMAGE_BASE_URL;
     const fullUrl = `${baseUrl}/${finalPath}`;
     
     return fullUrl;
@@ -171,6 +171,13 @@ const Adoption = () => {
     
     // Otherwise try the actual image URL
     return getImageUrl(animal.image);
+  };
+
+  // Handle image error and fallback to placeholder
+  const handleImageError = (event, animal) => {
+    event.target.src = placeholderImage;
+    // Mark this animal as having invalid image to prevent repeated attempts
+    animal.hasValidImage = false;
   };
 
 
@@ -429,14 +436,12 @@ const Adoption = () => {
 
             </div>
 
-            
-
             <div className="animal-image">
-
               <img 
                 src={getSafeImageSrc(animal)} 
                 alt={animal.name}
                 loading="lazy"
+                onError={(e) => handleImageError(e, animal)}
               />
 
               <div className="image-overlay">
@@ -542,6 +547,7 @@ const Adoption = () => {
                   onClick={handleImageClick}
                   style={{ cursor: 'pointer' }}
                   loading="lazy"
+                  onError={(e) => handleImageError(e, selectedAnimal)}
                 />
 
               </div>
@@ -651,6 +657,7 @@ const Adoption = () => {
               alt={selectedAnimal.name} 
               className="image-popup-img"
               loading="lazy"
+              onError={(e) => handleImageError(e, selectedAnimal)}
             />
 
           </div>
