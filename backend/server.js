@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 const animalRoutes = require('./routes/animalRoutes');
 const kitRoutes = require('./routes/kitRoutes');
 const adoptionRoutes = require('./routes/adoptionRoutes');
@@ -19,7 +20,10 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
+
+// Serve uploaded images from a consistent absolute uploads directory
+const uploadsPath = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
