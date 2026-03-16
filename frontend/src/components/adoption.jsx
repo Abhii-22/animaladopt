@@ -151,13 +151,18 @@ const Adoption = () => {
       return imagePath;
     }
     
-    // Remove any leading slashes and ensure clean path
-    const cleanPath = imagePath.replace(/^\/+/, '');
+    // Handle uploaded images that start with /uploads/
+    if (imagePath.startsWith('/uploads/')) {
+      return `${IMAGE_BASE_URL}${imagePath}`;
+    }
     
-    // Construct the full URL
-    const fullUrl = `${IMAGE_BASE_URL}/${cleanPath}`;
+    // Handle relative paths without leading slash
+    if (!imagePath.startsWith('/')) {
+      return `${IMAGE_BASE_URL}/${imagePath}`;
+    }
     
-    return fullUrl;
+    // Handle paths with leading slash but not /uploads/
+    return `${IMAGE_BASE_URL}${imagePath}`;
   };
 
   // Smart image source that prevents errors
@@ -168,11 +173,14 @@ const Adoption = () => {
     }
     
     // Otherwise try the actual image URL
-    return getImageUrl(animal.image);
+    const imageUrl = getImageUrl(animal.image);
+    console.log('Image URL for', animal.name, ':', imageUrl);
+    return imageUrl;
   };
 
   // Handle image error and fallback to placeholder
   const handleImageError = (event, animal) => {
+    console.error('Image failed to load for', animal.name, '- Original path:', animal.image, '- Attempted URL:', event.target.src);
     event.target.src = placeholderImage;
     // Mark this animal as having invalid image to prevent repeated attempts
     animal.hasValidImage = false;
