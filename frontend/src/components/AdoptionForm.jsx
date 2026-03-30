@@ -54,16 +54,9 @@ const AdoptionForm = ({ animal, onClose }) => {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    // Handle uploaded images that start with /uploads/
-    if (imagePath.startsWith('/uploads/')) {
-      return `${API_BASE_URL}${imagePath}`;
-    }
-    // Handle relative paths without leading slash
-    if (!imagePath.startsWith('/')) {
-      return `${API_BASE_URL}/${imagePath}`;
-    }
-    // Handle paths with leading slash but not /uploads/
-    return `${API_BASE_URL}${imagePath}`;
+    // Convert backslashes to forward slashes and remove leading slash if present
+    const normalizedPath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
+    return `${API_BASE_URL}/${normalizedPath}`;
   };
 
   return (

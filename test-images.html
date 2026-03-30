@@ -9,9 +9,6 @@
     <p>Testing image URL: <span id="testUrl"></span></p>
     <img id="testImage" style="max-width: 300px; border: 1px solid #ccc;" />
     
-    <h3>API Test - Animals:</h3>
-    <div id="api-result">Loading...</div>
-    
     <script>
         const baseUrl = 'http://localhost:5001';
         const testImagePath = 'uploads/1771910290131.jpeg'; // Use an actual image filename
@@ -30,35 +27,6 @@
             console.error('Failed to load image:', testUrl);
             document.getElementById('testImage').alt = 'Failed to load image. Check if backend is running on ' + baseUrl;
         };
-        
-        // Test API and display animals with images
-        fetch(`${baseUrl}/api/animals`)
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('api-result');
-                resultDiv.innerHTML = `<p>Found ${data.length} animals in database:</p>`;
-                
-                data.slice(0, 5).forEach(animal => {
-                    const imageUrl = animal.image.startsWith('http') ? animal.image : 
-                                    animal.image.startsWith('/uploads/') ? `${baseUrl}${animal.image}` : 
-                                    `${baseUrl}/${animal.image}`;
-                    
-                    resultDiv.innerHTML += `
-                        <div style="border: 1px solid #ccc; margin: 10px; padding: 10px; display: inline-block;">
-                            <h4>${animal.name} - ${animal.breed}</h4>
-                            <p><small>Image path: ${animal.image}</small></p>
-                            <img src="${imageUrl}" 
-                                 alt="${animal.name}" 
-                                 style="max-width: 150px; display: block;"
-                                 onerror="this.style.border='2px solid red'; this.alt='Image failed to load'; console.error('Failed:', '${imageUrl}');"
-                                 onload="console.log('Loaded:', '${imageUrl}');">
-                        </div>
-                    `;
-                });
-            })
-            .catch(error => {
-                document.getElementById('api-result').innerHTML = '<p style="color: red;">API Error: ' + error.message + '</p>';
-            });
     </script>
 </body>
 </html>
