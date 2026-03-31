@@ -4,8 +4,9 @@
   "description": "Animal adoption API backend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node scripts/startup.js && node server.js",
+    "dev": "nodemon server.js",
+    "startup": "node scripts/startup.js"
   },
   "keywords": ["animal", "adoption", "api"],
   "author": "",

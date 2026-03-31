@@ -286,7 +286,9 @@ const Adoption = () => {
 
 
 
-  const getImageUrl = (imagePath) => {
+  // Enhanced image URL with fallback for production
+
+  const getImageUrlWithFallback = (imagePath, animalName) => {
 
     if (!imagePath) {
 
@@ -304,19 +306,25 @@ const Adoption = () => {
 
     
 
-    // Remove any leading slashes and ensure clean path
+    // In production, try the original URL first, then fallback
+
+    if (process.env.NODE_ENV === 'production') {
+
+      const cleanPath = imagePath.replace(/^\/+/, '');
+
+      const originalUrl = `${IMAGE_BASE_URL}/${cleanPath}`;
+
+      return originalUrl;
+
+    }
+
+    
+
+    // Development: use local server
 
     const cleanPath = imagePath.replace(/^\/+/, '');
 
-    
-
-    // Construct the full URL
-
-    const fullUrl = `${IMAGE_BASE_URL}/${cleanPath}`;
-
-    
-
-    return fullUrl;
+    return `${IMAGE_BASE_URL}/${cleanPath}`;
 
   };
 
@@ -336,23 +344,37 @@ const Adoption = () => {
 
     
 
-    // Otherwise try the actual image URL
+    // Otherwise try the actual image URL with fallback
 
-    return getImageUrl(animal.image);
+    return getImageUrlWithFallback(animal.image, animal.name);
 
   };
 
 
 
-  // Handle image error and fallback to placeholder
+  // Handle image error and fallback to placeholder or fallback service
 
   const handleImageError = (event, animal) => {
 
-    event.target.src = placeholderImage;
+    // In production, try fallback image service first
 
-    // Mark this animal as having invalid image to prevent repeated attempts
+    if (process.env.NODE_ENV === 'production' && !animal.triedFallback) {
 
-    animal.hasValidImage = false;
+      animal.triedFallback = true;
+
+      const fallbackUrl = `https://picsum.photos/seed/${animal.name || 'animal'}-${animal._id}/300/200.jpg`;
+
+      event.target.src = fallbackUrl;
+
+    } else {
+
+      // Final fallback to placeholder
+
+      event.target.src = placeholderImage;
+
+      animal.hasValidImage = false;
+
+    }
 
   };
 

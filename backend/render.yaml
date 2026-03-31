@@ -2,15 +2,15 @@ services:
   - type: web
     name: adoption-api
     runtime: node
-    buildCommand: "npm install"
+    buildCommand: "npm install && mkdir -p uploads"
     startCommand: "npm start"
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      - key: DATABASE_URL
-        value: "your_mongodb_atlas_connection_string_here"
+      - key: MONGODB_URI
+        value: "mongodb+srv://abhishekeb2003_db_animal:Animal@cluster0.cmhsn9e.mongodb.net/animaladoption"
       - key: JWT_SECRET
         value: "your-super-secret-jwt-key-change-this-in-production"
       - key: JWT_EXPIRES_IN
