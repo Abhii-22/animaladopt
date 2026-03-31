@@ -298,6 +298,7 @@ const Adoption = () => {
 
     
 
+    // If it's already a full URL (Cloudinary), return as-is
     if (imagePath.startsWith('http')) {
 
       return imagePath;
@@ -305,9 +306,7 @@ const Adoption = () => {
     }
 
     
-
-    // In production, try the original URL first, then fallback
-
+    // Handle legacy local uploads
     if (process.env.NODE_ENV === 'production') {
 
       const cleanPath = imagePath.replace(/^\/+/, '');
@@ -319,9 +318,7 @@ const Adoption = () => {
     }
 
     
-
     // Development: use local server
-
     const cleanPath = imagePath.replace(/^\/+/, '');
 
     return `${IMAGE_BASE_URL}/${cleanPath}`;

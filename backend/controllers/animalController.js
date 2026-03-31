@@ -29,34 +29,39 @@ exports.createAnimal = async (req, res) => {
 // Create a new animal with image upload
 exports.uploadAnimal = async (req, res) => {
     console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file);
+    
     const { name, age, breed, type, location, gender, size, description, price, phone, email, vaccinated, neutered } = req.body;
-  const image = req.file ? `/uploads/${req.file.filename}` : '';
+    
+    // Use Cloudinary URL if file was uploaded, otherwise empty string
+    const image = req.file ? req.file.path : '';
 
-  const animal = new Animal({
-    name,
-    age,
-    breed,
-    type,
-    location,
-    gender,
-    size,
-    description,
-    price,
-    phone,
-    email,
-    vaccinated: vaccinated === 'true',
-    neutered: neutered === 'true',
-    image,
-    user: req.user.id // Add current user ID
-  });
+    const animal = new Animal({
+      name,
+      age,
+      breed,
+      type,
+      location,
+      gender,
+      size,
+      description,
+      price,
+      phone,
+      email,
+      vaccinated: vaccinated === 'true',
+      neutered: neutered === 'true',
+      image,
+      user: req.user.id // Add current user ID
+    });
 
-  try {
-    const newAnimal = await animal.save();
-    console.log('Saved animal:', newAnimal);
-    res.status(201).json(newAnimal);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+    try {
+      const newAnimal = await animal.save();
+      console.log('Saved animal:', newAnimal);
+      res.status(201).json(newAnimal);
+    } catch (err) {
+      console.error('Error saving animal:', err);
+      res.status(400).json({ message: err.message });
+    }
 };
 
 // Get user's animals

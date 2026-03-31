@@ -15,4 +15,10 @@ services:
         value: "your-super-secret-jwt-key-change-this-in-production"
       - key: JWT_EXPIRES_IN
         value: "7d"
+      - key: CLOUDINARY_CLOUD_NAME
+        value: "your-cloudinary-cloud-name"
+      - key: CLOUDINARY_API_KEY
+        value: "your-cloudinary-api-key"
+      - key: CLOUDINARY_API_SECRET
+        value: "your-cloudinary-api-secret"
     plan: free
