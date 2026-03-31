@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
 import './Kit.css';
-
+import Header from './Header';
 
 const Kit = ({ addToCart, cartCount }) => {
   const navigate = useNavigate();
@@ -29,15 +29,15 @@ const Kit = ({ addToCart, cartCount }) => {
   }, []);
   return (
     <div className="kit-container">
-      <header className="kit-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+      <Header />
+      <div className="kit-content">
         <h1>Adoption Kits & Food</h1>
         <p>Everything you need to welcome your new friend home.</p>
-                <button className="cart-icon-btn" onClick={() => navigate('/cart')}>
+        <button className="cart-icon-btn" onClick={() => navigate('/cart')}>
           🛒
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </button>
-      </header>
+      </div>
       <main className="kit-grid">
         {kitProducts.map((product, index) => (
           <div className="kit-card" key={product._id || index}>

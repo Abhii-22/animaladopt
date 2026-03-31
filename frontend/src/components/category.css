@@ -8,6 +8,7 @@
 .category-container {
   background: #000000;
   min-height: 100vh;
+  padding-top: 100px;
   color: #fff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;

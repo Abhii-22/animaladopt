@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
 import './category.css';
+import Header from './Header';
 
 const Category = () => {
   const navigate = useNavigate();
@@ -86,39 +87,8 @@ const Category = () => {
 
   return (
     <div className="category-container">
-      {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-content">
-          <button className="back-btn" onClick={() => navigate('/')}>
-            <span className="back-icon">←</span>
-            <span className="back-text">Back to Home</span>
-          </button>
-          <div className="hero-text">
-            <h1 className="hero-title">
-              <span className="title-line">Choose Your</span>
-              <span className="title-highlight">Perfect Match</span>
-            </h1>
-            <p className="hero-subtitle">
-              Discover amazing animals organized by category. Each one is waiting for a loving home like yours.
-            </p>
-            <div className="hero-stats">
-              <div className="stat-item">
-                <span className="stat-number">{adoptionAnimals.length}</span>
-                <span className="stat-label">Total Animals</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">6</span>
-                <span className="stat-label">Categories</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">100%</span>
-                <span className="stat-label">Love Guaranteed</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <Header />
+      
       {/* Categories Section */}
       <div className="categories-section">
         <div className="section-header">

@@ -1,35 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-
-
-import { useNavigate } from 'react-router-dom';
-
-
-
 import API_BASE_URL, { IMAGE_BASE_URL } from '../config/api';
-
-
-
 import './adoption.css';
-
-
-
 import AdoptionForm from './AdoptionForm';
-
-
-
 import ShelterModal from './ShelterModal';
+import Header from './Header';
 
 
 
 const Adoption = () => {
-
-
-
-  const navigate = useNavigate();
-
-
-
   const [adoptionAnimals, setAdoptionAnimals] = useState([]);
 
   const [filteredAnimals, setFilteredAnimals] = useState([]);
@@ -498,42 +476,8 @@ const Adoption = () => {
 
 
   return (
-
-
-
     <div className="adoption-container">
-
-
-
-      {/* Header */}
-
-
-
-      <div className="header">
-
-
-
-        <button className="back-btn" onClick={() => navigate('/')}>
-
-
-
-          <span className="back-icon">←</span>
-
-
-
-          <span className="back-text">Back to Home</span>
-
-
-
-        </button>
-
-
-
-        
-
-
-
-      </div>
+      <Header />
 
 
 

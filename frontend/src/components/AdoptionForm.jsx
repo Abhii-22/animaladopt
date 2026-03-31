@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import API_BASE_URL from '../config/api';
 import './AdoptionForm.css';
+import Header from './Header';
 
 const AdoptionForm = ({ animal, onClose }) => {
   const [formData, setFormData] = useState({
@@ -62,6 +63,7 @@ const AdoptionForm = ({ animal, onClose }) => {
   return (
     <div className="adoption-form-modal-overlay" onClick={onClose}>
       <div className="adoption-form-modal-content" onClick={(e) => e.stopPropagation()}>
+        <Header />
         <button className="modal-close" onClick={onClose}>×</button>
         <div className="animal-image-container">
           <img 

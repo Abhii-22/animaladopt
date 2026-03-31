@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSignOutAlt, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import API_BASE_URL from '../../config/api';
 import './Profile.css';
+import Header from '../Header';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -130,14 +131,12 @@ const Profile = () => {
   };
 
   // Handle sign out
-  const handleSignOut = () => {
-    signout();
-    navigate('/signin');
-  };
+  // Note: Sign out is now handled in the Header component
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
+      <Header />
+      <div className="profile-content">
         <div className="profile-info">
           <h2>{user.name}</h2>
           <p><strong>Email:</strong> {user.email}</p>
@@ -149,10 +148,6 @@ const Profile = () => {
             {isEditing ? 'Cancel' : 'Edit Profile'}
           </button>
         </div>
-        
-        <button onClick={handleSignOut} className="sign-out-button">
-          <FaSignOutAlt /> Sign Out
-        </button>
       </div>
 
       {isEditing ? (
