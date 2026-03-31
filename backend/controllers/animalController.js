@@ -28,39 +28,84 @@ exports.createAnimal = async (req, res) => {
 
 // Create a new animal with image upload
 exports.uploadAnimal = async (req, res) => {
-    console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file);
-    
-    const { name, age, breed, type, location, gender, size, description, price, phone, email, vaccinated, neutered } = req.body;
-    
-    // Use Cloudinary URL if file was uploaded, otherwise empty string
-    const image = req.file ? req.file.path : '';
-
-    const animal = new Animal({
-      name,
-      age,
-      breed,
-      type,
-      location,
-      gender,
-      size,
-      description,
-      price,
-      phone,
-      email,
-      vaccinated: vaccinated === 'true',
-      neutered: neutered === 'true',
-      image,
-      user: req.user.id // Add current user ID
-    });
-
     try {
-      const newAnimal = await animal.save();
-      console.log('Saved animal:', newAnimal);
-      res.status(201).json(newAnimal);
+        console.log('=== Upload Animal Request ===');
+        console.log('Request body:', req.body);
+        console.log('Request file:', req.file);
+        console.log('User ID:', req.user?.id);
+        
+        const { name, age, breed, type, location, gender, size, description, price, phone, email, vaccinated, neutered } = req.body;
+        
+        // Validate required fields
+        if (!name || !breed || !type) {
+            return res.status(400).json({ message: 'Name, breed, and type are required' });
+        }
+        
+        let image = '';
+        if (req.file) {
+            console.log('File details:', {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size,
+                path: req.file.path
+            });
+            
+            // Check if it's a Cloudinary URL (full HTTP URL) or local path
+            if (req.file.path && req.file.path.startsWith('http')) {
+                // Cloudinary URL
+                image = req.file.path;
+                console.log('Using Cloudinary URL:', image);
+            } else {
+                // Local file - create relative path
+                image = `/uploads/${req.file.filename}`;
+                console.log('Using local path:', image);
+            }
+        } else {
+            console.log('No file uploaded');
+        }
+
+        const animal = new Animal({
+            name,
+            age,
+            breed,
+            type,
+            location,
+            gender,
+            size,
+            description,
+            price,
+            phone,
+            email,
+            vaccinated: vaccinated === 'true',
+            neutered: neutered === 'true',
+            image,
+            user: req.user.id
+        });
+
+        const newAnimal = await animal.save();
+        console.log('Successfully saved animal:', newAnimal);
+        res.status(201).json(newAnimal);
+        
     } catch (err) {
-      console.error('Error saving animal:', err);
-      res.status(400).json({ message: err.message });
+        console.error('=== Upload Error ===');
+        console.error('Error type:', err.constructor.name);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+        
+        // Handle specific errors
+        if (err.name === 'ValidationError') {
+            const messages = Object.values(err.errors).map(e => e.message);
+            return res.status(400).json({ message: 'Validation error: ' + messages.join(', ') });
+        }
+        
+        if (err.code === 11000) {
+            return res.status(400).json({ message: 'Duplicate entry detected' });
+        }
+        
+        res.status(500).json({ 
+            message: 'Server error during upload. Please try again.',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
     }
 };
 

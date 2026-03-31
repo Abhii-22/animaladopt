@@ -1,11 +1,22 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
+// Check if all required environment variables are set
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+if (!cloudName || !apiKey || !apiSecret) {
+  console.warn('Cloudinary credentials not found. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables.');
+  module.exports = { cloudinary: null, storage: null };
+  return;
+}
+
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'your-cloud-name', // You'll need to set this
-  api_key: process.env.CLOUDINARY_API_KEY || 'your-api-key', // You'll need to set this
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'your-api-secret' // You'll need to set this
+  cloud_name: cloudName,
+  api_key: apiKey,
+  api_secret: apiSecret
 });
 
 // Configure storage for images

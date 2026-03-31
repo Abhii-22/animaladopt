@@ -98,7 +98,16 @@ const Upload = () => {
         setError(errorData.message || 'Failed to upload animal. Please try again.');
       }
     } catch (error) {
-      setError('An error occurred while uploading. Please check your connection and try again.');
+      console.error('Upload error:', error);
+      
+      // More specific error messages
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (error.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError('An error occurred while uploading. Please check your connection and try again.');
+      }
     }
   };
 
