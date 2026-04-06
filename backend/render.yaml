@@ -16,9 +16,9 @@ services:
       - key: JWT_EXPIRES_IN
         value: "7d"
       - key: CLOUDINARY_CLOUD_NAME
-        value: "SET_YOUR_CLOUDINARY_CLOUD_NAME"
+        value: "dfd0kotgh"
       - key: CLOUDINARY_API_KEY
-        value: "SET_YOUR_CLOUDINARY_API_KEY"
+        value: "YOUR_ACTUAL_API_KEY"
       - key: CLOUDINARY_API_SECRET
-        value: "SET_YOUR_CLOUDINARY_API_SECRET"
+        value: "YOUR_ACTUAL_API_SECRET"
     plan: free
