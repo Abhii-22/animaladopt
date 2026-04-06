@@ -17,12 +17,17 @@ const generateOTP = () => {
 
 const sendVerificationOTP = async (email, name, otp) => {
   try {
+    console.log(`📧 Attempting to send verification email to: ${email}`);
+    console.log(`📧 Email user configured: ${process.env.EMAIL_USER ? 'YES' : 'NO'}`);
+    console.log(`📧 Email pass configured: ${process.env.EMAIL_PASS ? 'YES' : 'NO'}`);
+    
     // Only skip email if credentials are not configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.log(`🔧 Email not configured - OTP for ${email}: ${otp}`);
       return true;
     }
 
+    console.log(`📧 Creating email transporter...`);
     const transporter = createTransporter();
     
     const mailOptions = {
@@ -49,11 +54,13 @@ const sendVerificationOTP = async (email, name, otp) => {
       `
     };
 
+    console.log(`📧 Sending email...`);
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Verification OTP sent to ${email}`);
+    console.log(`✅ Verification OTP sent successfully to ${email}`);
     return true;
   } catch (error) {
-    console.error('❌ Error sending verification OTP:', error);
+    console.error('❌ Error sending verification OTP:', error.message);
+    console.error('❌ Full error:', error);
     
     // If email fails, log the OTP for manual verification
     console.log(`🔧 Email failed - OTP for ${email}: ${otp}`);

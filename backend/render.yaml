@@ -15,6 +15,10 @@ services:
         value: "your-super-secret-jwt-key-change-this-in-production"
       - key: JWT_EXPIRES_IN
         value: "7d"
+      - key: EMAIL_USER
+        value: "pethomex79@gmail.com"
+      - key: EMAIL_PASS
+        value: "haic jltd zumn wakq"
       - key: CLOUDINARY_CLOUD_NAME
         value: "dfd0kotgh"
       - key: CLOUDINARY_API_KEY
