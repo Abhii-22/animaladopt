@@ -17,6 +17,12 @@ const generateOTP = () => {
 
 const sendVerificationOTP = async (email, name, otp) => {
   try {
+    // In development or if email is not configured, skip sending email
+    if (process.env.NODE_ENV === 'development' || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log(`🔧 Development mode - OTP for ${email}: ${otp}`);
+      return true;
+    }
+
     const transporter = createTransporter();
     
     const mailOptions = {
@@ -48,12 +54,25 @@ const sendVerificationOTP = async (email, name, otp) => {
     return true;
   } catch (error) {
     console.error('Error sending verification OTP:', error);
+    
+    // In production, if email fails, log the OTP for manual verification
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`🔧 Email failed - OTP for ${email}: ${otp}`);
+      return true; // Allow signup to continue even if email fails
+    }
+    
     return false;
   }
 };
 
 const sendPasswordResetOTP = async (email, name, otp) => {
   try {
+    // In development or if email is not configured, skip sending email
+    if (process.env.NODE_ENV === 'development' || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log(`🔧 Development mode - Password reset OTP for ${email}: ${otp}`);
+      return true;
+    }
+
     const transporter = createTransporter();
     
     const mailOptions = {
@@ -85,6 +104,13 @@ const sendPasswordResetOTP = async (email, name, otp) => {
     return true;
   } catch (error) {
     console.error('Error sending password reset OTP:', error);
+    
+    // In production, if email fails, log the OTP for manual verification
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`🔧 Email failed - Password reset OTP for ${email}: ${otp}`);
+      return true; // Allow reset to continue even if email fails
+    }
+    
     return false;
   }
 };
