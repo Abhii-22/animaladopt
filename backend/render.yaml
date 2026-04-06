@@ -18,7 +18,7 @@ services:
       - key: CLOUDINARY_CLOUD_NAME
         value: "dfd0kotgh"
       - key: CLOUDINARY_API_KEY
-        value: "YOUR_ACTUAL_API_KEY"
+        value: "272929261371422"
       - key: CLOUDINARY_API_SECRET
-        value: "YOUR_ACTUAL_API_SECRET"
+        value: "CSVbxl3UBIhBWkyTmKBqjputk-E"
     plan: free
