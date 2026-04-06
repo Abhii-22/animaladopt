@@ -23,7 +23,7 @@ const port = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors({
-  origin: ['https://animaladopt.vercel.app', 'https://animaladopt-pvi1.vercel.app', 'https://animaladopt-2.onrender.com', 'http://localhost:3000', 'http://localhost:3001'],
+  origin: ['https://animaladopt.vercel.app', 'https://animaladopt-pvi1.vercel.app', 'https://animaladopt-3.onrender.com', 'http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
