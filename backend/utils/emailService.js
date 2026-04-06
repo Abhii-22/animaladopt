@@ -17,9 +17,9 @@ const generateOTP = () => {
 
 const sendVerificationOTP = async (email, name, otp) => {
   try {
-    // In development or if email is not configured, skip sending email
-    if (process.env.NODE_ENV === 'development' || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log(`🔧 Development mode - OTP for ${email}: ${otp}`);
+    // Only skip email if credentials are not configured
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log(`🔧 Email not configured - OTP for ${email}: ${otp}`);
       return true;
     }
 
@@ -50,26 +50,22 @@ const sendVerificationOTP = async (email, name, otp) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`Verification OTP sent to ${email}`);
+    console.log(`✅ Verification OTP sent to ${email}`);
     return true;
   } catch (error) {
-    console.error('Error sending verification OTP:', error);
+    console.error('❌ Error sending verification OTP:', error);
     
-    // In production, if email fails, log the OTP for manual verification
-    if (process.env.NODE_ENV === 'production') {
-      console.log(`🔧 Email failed - OTP for ${email}: ${otp}`);
-      return true; // Allow signup to continue even if email fails
-    }
-    
-    return false;
+    // If email fails, log the OTP for manual verification
+    console.log(`🔧 Email failed - OTP for ${email}: ${otp}`);
+    return true; // Allow signup to continue even if email fails
   }
 };
 
 const sendPasswordResetOTP = async (email, name, otp) => {
   try {
-    // In development or if email is not configured, skip sending email
-    if (process.env.NODE_ENV === 'development' || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log(`🔧 Development mode - Password reset OTP for ${email}: ${otp}`);
+    // Only skip email if credentials are not configured
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log(`🔧 Email not configured - Password reset OTP for ${email}: ${otp}`);
       return true;
     }
 
@@ -100,18 +96,14 @@ const sendPasswordResetOTP = async (email, name, otp) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`Password reset OTP sent to ${email}`);
+    console.log(`✅ Password reset OTP sent to ${email}`);
     return true;
   } catch (error) {
-    console.error('Error sending password reset OTP:', error);
+    console.error('❌ Error sending password reset OTP:', error);
     
-    // In production, if email fails, log the OTP for manual verification
-    if (process.env.NODE_ENV === 'production') {
-      console.log(`🔧 Email failed - Password reset OTP for ${email}: ${otp}`);
-      return true; // Allow reset to continue even if email fails
-    }
-    
-    return false;
+    // If email fails, log the OTP for manual verification
+    console.log(`🔧 Email failed - Password reset OTP for ${email}: ${otp}`);
+    return true; // Allow reset to continue even if email fails
   }
 };
 
