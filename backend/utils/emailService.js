@@ -3,11 +3,15 @@ const crypto = require('crypto');
 
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
-    }
+    },
+    debug: true,
+    logger: true
   });
 };
 
@@ -21,14 +25,26 @@ const sendVerificationOTP = async (email, name, otp) => {
     console.log(`📧 Email user configured: ${process.env.EMAIL_USER ? 'YES' : 'NO'}`);
     console.log(`📧 Email pass configured: ${process.env.EMAIL_PASS ? 'YES' : 'NO'}`);
     
+    // Always show OTP in console for development/testing
+    console.log(`🔍 DEVELOPMENT - OTP for ${email}: ${otp}`);
+    
     // Only skip email if credentials are not configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log(`🔧 Email not configured - OTP for ${email}: ${otp}`);
+      console.log(`⚠️  Email not configured - Please set up Gmail credentials`);
+      console.log(`📋 To fix email sending:`);
+      console.log(`   1. Enable 2-Factor Authentication on your Gmail account`);
+      console.log(`   2. Go to: https://myaccount.google.com/apppasswords`);
+      console.log(`   3. Generate an App Password for "Mail"`);
+      console.log(`   4. Use that App Password as EMAIL_PASS in your .env file`);
       return true;
     }
 
     console.log(`📧 Creating email transporter...`);
     const transporter = createTransporter();
+    
+    // Verify transporter connection
+    await transporter.verify();
+    console.log(`✅ Email transporter verified successfully`);
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -60,23 +76,39 @@ const sendVerificationOTP = async (email, name, otp) => {
     return true;
   } catch (error) {
     console.error('❌ Error sending verification OTP:', error.message);
-    console.error('❌ Full error:', error);
     
-    // If email fails, log the OTP for manual verification
-    console.log(`🔧 Email failed - OTP for ${email}: ${otp}`);
+    if (error.code === 'EAUTH') {
+      console.log(`🔧 Gmail Authentication Error - Fix Steps:`);
+      console.log(`   1. Make sure 2-Factor Authentication is enabled on your Gmail account`);
+      console.log(`   2. Go to: https://myaccount.google.com/apppasswords`);
+      console.log(`   3. Generate a new App Password for "Mail"`);
+      console.log(`   4. Copy the 16-character password and use it as EMAIL_PASS`);
+      console.log(`   5. Update your .env file with the new App Password`);
+    }
+    
+    // Always show OTP for manual verification
+    console.log(`🔧 EMAIL FAILED - Use this OTP for ${email}: ${otp}`);
     return true; // Allow signup to continue even if email fails
   }
 };
 
 const sendPasswordResetOTP = async (email, name, otp) => {
   try {
+    console.log(`📧 Attempting to send password reset email to: ${email}`);
+    
+    // Always show OTP in console for development/testing
+    console.log(`🔍 DEVELOPMENT - Password reset OTP for ${email}: ${otp}`);
+    
     // Only skip email if credentials are not configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log(`🔧 Email not configured - Password reset OTP for ${email}: ${otp}`);
+      console.log(`⚠️  Email not configured - Password reset OTP for ${email}: ${otp}`);
       return true;
     }
 
     const transporter = createTransporter();
+    
+    // Verify transporter connection
+    await transporter.verify();
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -106,10 +138,14 @@ const sendPasswordResetOTP = async (email, name, otp) => {
     console.log(`✅ Password reset OTP sent to ${email}`);
     return true;
   } catch (error) {
-    console.error('❌ Error sending password reset OTP:', error);
+    console.error('❌ Error sending password reset OTP:', error.message);
     
-    // If email fails, log the OTP for manual verification
-    console.log(`🔧 Email failed - Password reset OTP for ${email}: ${otp}`);
+    if (error.code === 'EAUTH') {
+      console.log(`🔧 Gmail Authentication Error - See setup instructions above`);
+    }
+    
+    // Always show OTP for manual verification
+    console.log(`🔧 EMAIL FAILED - Password reset OTP for ${email}: ${otp}`);
     return true; // Allow reset to continue even if email fails
   }
 };

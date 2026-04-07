@@ -56,20 +56,9 @@ exports.uploadAnimal = async (req, res) => {
                 image = req.file.path;
                 console.log('Using Cloudinary URL:', image);
             } else {
-                // Local file - create full URL for production, relative path for development
-                const baseUrl = process.env.NODE_ENV === 'production' 
-                    ? `https://animaladopt-3.onrender.com` 
-                    : `http://localhost:${process.env.PORT || 5001}`;
-                
-                // For production, use Cloudinary if available, otherwise use placeholder
-                if (process.env.NODE_ENV === 'production' && !process.env.CLOUDINARY_CLOUD_NAME) {
-                    // No Cloudinary configured in production - use placeholder
-                    image = 'https://via.placeholder.com/400x300/6366f1/ffffff?text=Upload+Disabled';
-                    console.log('Using placeholder image (Cloudinary not configured)');
-                } else {
-                    image = `${baseUrl}/uploads/${req.file.filename}`;
-                    console.log('Using full URL:', image);
-                }
+                // Local file - create relative path
+                image = `/uploads/${req.file.filename}`;
+                console.log('Using local path:', image);
             }
         } else {
             console.log('No file uploaded');
