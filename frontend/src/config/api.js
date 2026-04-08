@@ -1,9 +1,7 @@
 // API Configuration
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-
-  ? 'https://animaladopt-3.onrender.com' 
-
+  ? process.env.REACT_APP_API_URL || 'https://animaladopt.vercel.app'
   : 'http://localhost:5001';
 
 
@@ -11,9 +9,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 // Image URL Configuration with fallback for production
 
 const IMAGE_BASE_URL = process.env.NODE_ENV === 'production' 
-
-  ? 'https://animaladopt-3.onrender.com' 
-
+  ? process.env.REACT_APP_API_URL || 'https://animaladopt.vercel.app'
   : 'http://localhost:5001';
 
 

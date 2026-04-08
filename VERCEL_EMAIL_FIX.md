@@ -36,7 +36,7 @@ Email OTP works locally but **fails on Vercel deployment** because environment v
 #### Email Configuration (CRITICAL)
 ```
 EMAIL_USER = pethomex79@gmail.com
-EMAIL_PASS = ktas rjva obhg fdtg
+EMAIL_PASS = prns fhrn xbqf wzqa
 ```
 
 #### Database Configuration
