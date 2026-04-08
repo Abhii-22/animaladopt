@@ -54,25 +54,72 @@ app.post('/api/test-email', async (req, res) => {
     const otp = generateOTP();
     console.log('🧪 Testing email service...');
     
+    // Log environment details
+    const envDetails = {
+      nodeEnv: process.env.NODE_ENV,
+      vercel: process.env.VERCEL ? 'true' : 'false',
+      hasEmailUser: !!process.env.EMAIL_USER,
+      hasEmailPass: !!process.env.EMAIL_PASS,
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      emailUserPrefix: process.env.EMAIL_USER ? process.env.EMAIL_USER.substring(0, 3) + '***' : 'missing'
+    };
+    
+    console.log('🔍 Environment details:', envDetails);
+    
+    const startTime = Date.now();
     const result = await sendVerificationOTP(email, name, otp);
+    const endTime = Date.now();
     
     res.json({ 
       success: result, 
       otp,
-      environment: {
-        nodeEnv: process.env.NODE_ENV,
-        vercel: process.env.VERCEL ? 'true' : 'false',
-        hasEmailUser: !!process.env.EMAIL_USER,
-        hasEmailPass: !!process.env.EMAIL_PASS
-      }
+      executionTime: `${endTime - startTime}ms`,
+      environment: envDetails,
+      timestamp: new Date().toISOString(),
+      message: result ? 'Email sent successfully' : 'Email failed - check logs for details'
     });
   } catch (error) {
     console.error('Email test error:', error);
     res.status(500).json({ 
       error: error.message,
-      details: error.code || 'Unknown error'
+      details: error.code || 'Unknown error',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      timestamp: new Date().toISOString()
     });
   }
+});
+
+// Comprehensive debugging endpoint
+app.get('/api/debug', (req, res) => {
+  const debugInfo = {
+    timestamp: new Date().toISOString(),
+    environment: {
+      nodeEnv: process.env.NODE_ENV,
+      vercel: process.env.VERCEL ? 'true' : 'false',
+      platform: process.platform,
+      version: process.version
+    },
+    emailConfig: {
+      hasEmailUser: !!process.env.EMAIL_USER,
+      hasEmailPass: !!process.env.EMAIL_PASS,
+      emailUserPrefix: process.env.EMAIL_USER ? process.env.EMAIL_USER.substring(0, 3) + '***' : 'missing'
+    },
+    database: {
+      hasMongoUri: !!process.env.MONGODB_URI,
+      mongoUriPrefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'missing'
+    },
+    auth: {
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    },
+    memory: {
+      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100,
+      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024 * 100) / 100
+    }
+  };
+  
+  res.json(debugInfo);
 });
 
 module.exports = app;

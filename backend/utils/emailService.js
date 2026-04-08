@@ -3,36 +3,45 @@ const crypto = require('crypto');
 
 const createTransporter = () => {
   // Check if we're in Vercel serverless environment
-  const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+  const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
   
   const config = {
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: isVercel ? 587 : 465, // Use 587 with STARTTLS for Vercel
+    secure: isVercel ? false : true, // false for 587, true for 465
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
     },
-    debug: isVercel, // Enable debug in production for troubleshooting
-    logger: isVercel,
-    connectionTimeout: isVercel ? 10000 : 5000, // Longer timeout for serverless
-    greetingTimeout: isVercel ? 5000 : 3000,
-    socketTimeout: isVercel ? 10000 : 5000,
+    debug: true, // Always enable debug for troubleshooting
+    logger: true,
+    connectionTimeout: 30000, // 30 seconds for serverless
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
     // Add TLS configuration for Vercel
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+      minVersion: 'TLSv1.2'
+    },
+    // Add pool configuration for serverless
+    pool: false, // Disable pooling for serverless
+    maxConnections: 1,
+    rateDelta: 1000,
+    rateLimit: 5
   };
 
   console.log('🔧 Email transporter config:', {
     hasUser: !!process.env.EMAIL_USER,
     hasPass: !!process.env.EMAIL_PASS,
     isVercel,
+    nodeEnv: process.env.NODE_ENV,
+    vercelEnv: process.env.VERCEL,
     host: config.host,
-    port: config.port
+    port: config.port,
+    secure: config.secure
   });
 
-  return nodemailer.createTransport(config);
+  return nodemailer.createTransporter(config);
 };
 
 const generateOTP = () => {
@@ -44,12 +53,14 @@ const sendVerificationOTP = async (email, name, otp) => {
   console.log(`🔍 OTP for ${email}: ${otp}`);
   
   // Enhanced environment check
-  const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+  const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
   console.log('🌍 Environment check:', { 
     isVercel, 
     nodeEnv: process.env.NODE_ENV,
+    vercelEnv: process.env.VERCEL,
     hasEmailUser: !!process.env.EMAIL_USER,
-    hasEmailPass: !!process.env.EMAIL_PASS
+    hasEmailPass: !!process.env.EMAIL_PASS,
+    emailUserPrefix: process.env.EMAIL_USER ? process.env.EMAIL_USER.substring(0, 3) + '***' : 'missing'
   });
   
   // Quick check if email credentials exist
@@ -57,20 +68,21 @@ const sendVerificationOTP = async (email, name, otp) => {
     console.log(`⚠️  Email not configured - OTP: ${otp}`);
     if (isVercel) {
       console.log('🚨 VERCEL ENVIRONMENT: Email credentials missing! Check Vercel dashboard environment variables.');
+      console.log('📋 Required variables: EMAIL_USER, EMAIL_PASS');
+      console.log('🔧 Go to: Vercel Dashboard → Project → Settings → Environment Variables');
     }
-    return true;
+    return false; // Return false to indicate failure
   }
 
   try {
     // Create transporter and verify connection first in Vercel
     const transporter = createTransporter();
     
-    // In Vercel, verify connection before sending
-    if (isVercel) {
-      console.log('🔍 Verifying email connection in Vercel...');
-      await transporter.verify();
-      console.log('✅ Email connection verified');
-    }
+    console.log('🔍 Creating transporter and verifying connection...');
+    
+    // Always verify connection before sending
+    await transporter.verify();
+    console.log('✅ Email connection verified successfully');
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -94,34 +106,60 @@ const sendVerificationOTP = async (email, name, otp) => {
         </div>`
     };
 
-    // Send email with longer timeout for Vercel
-    const timeout = isVercel ? 15000 : 8000;
-    await Promise.race([
+    // Send email with extended timeout for Vercel
+    const timeout = 30000; // 30 seconds
+    console.log('📧 Sending email...');
+    
+    const result = await Promise.race([
       transporter.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), timeout))
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Email timeout after 30 seconds')), timeout);
+      })
     ]);
     
-    console.log(`✅ Email sent to ${email}`);
+    console.log(`✅ Email sent successfully to ${email}`);
+    console.log('📧 Email details:', {
+      messageId: result.messageId,
+      response: result.response,
+      envelope: result.envelope
+    });
     return true;
   } catch (error) {
-    console.log(`❌ Email failed:`, {
+    console.error('❌ Email sending failed:', {
       code: error.code,
       message: error.message,
       command: error.command,
       response: error.response,
-      responseCode: error.responseCode
+      responseCode: error.responseCode,
+      stack: error.stack
     });
     
     if (isVercel) {
-      console.log('🚨 VERCEL EMAIL ERROR DETAILS:', {
+      console.error('🚨 VERCEL EMAIL ERROR ANALYSIS:', {
         errorType: error.code,
-        isAuthError: error.code === 'EAUTH',
+        isAuthError: error.code === 'EAUTH' || error.code === 'EAUTHFAILED',
         isConnectionError: error.code === 'ECONNECTION',
-        isTimeoutError: error.code === 'ETIMEDOUT'
+        isTimeoutError: error.code === 'ETIMEDOUT',
+        isGmailBlocking: error.responseCode === 550,
+        suggestion: getErrorSuggestion(error)
       });
     }
     
-    return true; // Continue even if email fails
+    return false; // Return false to indicate failure
+  }
+};
+
+const getErrorSuggestion = (error) => {
+  switch (error.code) {
+    case 'EAUTH':
+    case 'EAUTHFAILED':
+      return 'Check EMAIL_USER and EMAIL_PASS. Use App Password, not regular password.';
+    case 'ECONNECTION':
+      return 'Network connection failed. Try port 587 with STARTTLS.';
+    case 'ETIMEDOUT':
+      return 'Connection timeout. Gmail might be blocking Vercel IPs.';
+    default:
+      return 'Check Vercel function logs for more details.';
   }
 };
 
