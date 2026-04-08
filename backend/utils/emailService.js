@@ -2,7 +2,10 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 const createTransporter = () => {
-  return nodemailer.createTransport({
+  // Check if we're in Vercel serverless environment
+  const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+  
+  const config = {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
@@ -10,12 +13,26 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
     },
-    debug: false,
-    logger: false,
-    connectionTimeout: 5000,
-    greetingTimeout: 3000,
-    socketTimeout: 5000
+    debug: isVercel, // Enable debug in production for troubleshooting
+    logger: isVercel,
+    connectionTimeout: isVercel ? 10000 : 5000, // Longer timeout for serverless
+    greetingTimeout: isVercel ? 5000 : 3000,
+    socketTimeout: isVercel ? 10000 : 5000,
+    // Add TLS configuration for Vercel
+    tls: {
+      rejectUnauthorized: false
+    }
+  };
+
+  console.log('🔧 Email transporter config:', {
+    hasUser: !!process.env.EMAIL_USER,
+    hasPass: !!process.env.EMAIL_PASS,
+    isVercel,
+    host: config.host,
+    port: config.port
   });
+
+  return nodemailer.createTransport(config);
 };
 
 const generateOTP = () => {
@@ -26,15 +43,34 @@ const sendVerificationOTP = async (email, name, otp) => {
   // Always show OTP immediately for fast access
   console.log(`🔍 OTP for ${email}: ${otp}`);
   
+  // Enhanced environment check
+  const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+  console.log('🌍 Environment check:', { 
+    isVercel, 
+    nodeEnv: process.env.NODE_ENV,
+    hasEmailUser: !!process.env.EMAIL_USER,
+    hasEmailPass: !!process.env.EMAIL_PASS
+  });
+  
   // Quick check if email credentials exist
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.log(`⚠️  Email not configured - OTP: ${otp}`);
+    if (isVercel) {
+      console.log('🚨 VERCEL ENVIRONMENT: Email credentials missing! Check Vercel dashboard environment variables.');
+    }
     return true;
   }
 
   try {
-    // Create transporter and send email immediately (no verification step)
+    // Create transporter and verify connection first in Vercel
     const transporter = createTransporter();
+    
+    // In Vercel, verify connection before sending
+    if (isVercel) {
+      console.log('🔍 Verifying email connection in Vercel...');
+      await transporter.verify();
+      console.log('✅ Email connection verified');
+    }
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -58,16 +94,33 @@ const sendVerificationOTP = async (email, name, otp) => {
         </div>`
     };
 
-    // Send email with timeout
+    // Send email with longer timeout for Vercel
+    const timeout = isVercel ? 15000 : 8000;
     await Promise.race([
       transporter.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 8000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), timeout))
     ]);
     
     console.log(`✅ Email sent to ${email}`);
     return true;
   } catch (error) {
-    console.log(`❌ Email failed: ${error.code || error.message}`);
+    console.log(`❌ Email failed:`, {
+      code: error.code,
+      message: error.message,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode
+    });
+    
+    if (isVercel) {
+      console.log('🚨 VERCEL EMAIL ERROR DETAILS:', {
+        errorType: error.code,
+        isAuthError: error.code === 'EAUTH',
+        isConnectionError: error.code === 'ECONNECTION',
+        isTimeoutError: error.code === 'ETIMEDOUT'
+      });
+    }
+    
     return true; // Continue even if email fails
   }
 };
