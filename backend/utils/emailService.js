@@ -41,7 +41,7 @@ const createTransporter = () => {
     secure: config.secure
   });
 
-  return nodemailer.createTransporter(config);
+  return nodemailer.createTransport(config);
 };
 
 const generateOTP = () => {
